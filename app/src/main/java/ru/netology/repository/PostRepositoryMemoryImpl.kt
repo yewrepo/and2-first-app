@@ -9,36 +9,72 @@ import kotlin.random.Random
 
 class PostRepositoryMemoryImpl : PostRepository {
 
-    private var post = Post(
-        id = 1,
-        author = "Нетология. Университет интернет-профессий будущего",
-        content = "Привет, это новая Нетология! Когда-то Нетология начиналась с интенсивов по онлайн-маркетингу. " +
-                "Затем появились курсы по дизайну, разработке, аналитике и управлению. " +
-                "Мы растём сами и помогаем расти студентам: от новичков до уверенных профессионалов. " +
-                "Но самое важное остаётся с нами: мы верим, что в каждом уже есть сила, которая заставляет хотеть больше," +
-                " целиться выше, бежать быстрее. Наша миссия — помочь встать на путь роста и начать цепочку перемен " +
-                "→ http://netolo.gy/fyb",
-        published = "21 мая в 18:36",
-        likes = generateRandom(100, 1000),
-        share = generateRandom(100, 200),
-        view = generateRandom(1000, 150000)
+    private var post = listOf(
+        Post(
+            id = 1,
+            author = "Нетология. Университет интернет-профессий будущего",
+            content = "Привет, это новая Нетология! Когда-то Нетология начиналась с интенсивов по онлайн-маркетингу. " +
+                    "Затем появились курсы по дизайну, разработке, аналитике и управлению. " +
+                    "Мы растём сами и помогаем расти студентам: от новичков до уверенных профессионалов. " +
+                    "Но самое важное остаётся с нами: мы верим, что в каждом уже есть сила, которая заставляет хотеть больше," +
+                    " целиться выше, бежать быстрее. Наша миссия — помочь встать на путь роста и начать цепочку перемен " +
+                    "→ http://netolo.gy/fyb",
+            published = "21 мая в 18:36",
+            likes = generateRandom(1, 100, 1000),
+            share = generateRandom(1, 100, 200),
+            view = generateRandom(1, 1000, 150000)
+        ),
+        Post(
+            id = 2,
+            author = "Пост 2",
+            content = "Тест поста 2",
+            published = "21 мая в 18:36",
+            likes = generateRandom(2, 100, 1000),
+            share = generateRandom(2, 100, 200),
+            view = generateRandom(2, 1000, 150000)
+        ),
+        Post(
+            id = 3,
+            author = "Пост 3",
+            content = "Тест поста 3",
+            published = "21 мая в 18:36",
+            likes = generateRandom(3, 100, 1000),
+            share = generateRandom(3, 100, 200),
+            view = generateRandom(3, 1000, 150000)
+        )
     )
 
     private val data = MutableLiveData(post)
 
-    override fun get(): LiveData<Post> = data
+    override fun get(): LiveData<List<Post>> = data
 
-    override fun like() {
-        post = post.likeOrNot()
-        data.value = post
+    override fun likeById(id: Int) {
+        post.map { p ->
+            if (p.id == id) {
+                p.likeOrNot()
+            } else {
+                p
+            }
+        }.apply {
+            post = this
+            data.value = this
+        }
     }
 
-    override fun share() {
-        post = post.shareMe()
-        data.value = post
+    override fun shareById(id: Int) {
+        post.map { p ->
+            if (p.id == id) {
+                p.shareMe()
+            } else {
+                p
+            }
+        }.apply {
+            post = this
+            data.value = this
+        }
     }
 
-    private fun generateRandom(min: Int, max: Int): Int {
-        return Random(System.currentTimeMillis()).nextInt(min, max)
+    private fun generateRandom(seed: Int, min: Int, max: Int): Int {
+        return Random(seed).nextInt(min, max)
     }
 }

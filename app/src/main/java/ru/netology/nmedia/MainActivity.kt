@@ -3,9 +3,10 @@ package ru.netology.nmedia
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
-import ru.netology.extension.shortFormat
-import ru.netology.extension.likeOrNot
-import ru.netology.extension.shareMe
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import ru.netology.adapter.ClickCallback
+import ru.netology.adapter.PostAdapter
 import ru.netology.nmedia.databinding.ActivityMainBinding
 import ru.netology.vm.PostViewModel
 
@@ -14,50 +15,32 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     private val viewModel: PostViewModel by viewModels()
+    private var postAdapter: PostAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setCallbacks()
 
-        viewModel.data.observe(this, {
-            showPost(it)
+        postAdapter = PostAdapter(object : ClickCallback {
+            override fun onLikeClick(position: Int) {
+                postAdapter?.apply {
+                    viewModel.likeById(this.currentList[position].id)
+                }
+            }
+
+            override fun onShareClick(position: Int) {
+                postAdapter?.apply {
+                    viewModel.shareById(this.currentList[position].id)
+                }
+            }
         })
-    }
 
-    private fun setCallbacks() {
-        binding.likes.setOnClickListener {
-            viewModel.like()
-        }
-        binding.share.setOnClickListener {
-            viewModel.share()
-        }
-    }
-
-    private fun showPost(post: Post) {
-        setViews(post)
-        setShare(post)
-        setLikes(post)
-        with(binding) {
-            author.text = post.author
-            content.text = post.content
-            published.text = post.published
-        }
-    }
-
-    private fun setViews(post: Post) {
-        binding.views.text = post.view.shortFormat()
-    }
-
-    private fun setShare(post: Post) {
-        binding.share.text = post.share.shortFormat()
-    }
-
-    private fun setLikes(post: Post) {
-        binding.likes.text = post.likes.shortFormat()
-        val resId =
-            if (post.likedByMe) R.drawable.ic_fill_liked_24dp else R.drawable.ic_fill_like_24dp
-        binding.likes.setCompoundDrawablesRelativeWithIntrinsicBounds(resId, 0, 0, 0)
+        binding.recycler.layoutManager =
+            LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+        binding.recycler.adapter = postAdapter
+        viewModel.data.observe(this, {
+            postAdapter?.submitList(it)
+        })
     }
 }
