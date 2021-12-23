@@ -2,6 +2,7 @@ package ru.netology.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import ru.netology.extension.shortFormat
 import ru.netology.nmedia.Post
@@ -19,6 +20,24 @@ class PostViewHolder(
         }
         binding.share.setOnClickListener {
             callback.onShareClick(bindingAdapterPosition)
+        }
+        binding.menu.setOnClickListener {
+            PopupMenu(it.context, it).apply {
+                inflate(R.menu.post_options)
+                setOnMenuItemClickListener { item ->
+                    return@setOnMenuItemClickListener when (item.itemId) {
+                        R.id.remove -> {
+                            callback.onRemoveClick(bindingAdapterPosition)
+                            true
+                        }
+                        R.id.edit -> {
+                            callback.onEditClick(bindingAdapterPosition)
+                            true
+                        }
+                        else -> false
+                    }
+                }
+            }.show()
         }
     }
 

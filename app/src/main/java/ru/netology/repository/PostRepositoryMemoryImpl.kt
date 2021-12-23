@@ -9,7 +9,7 @@ import kotlin.random.Random
 
 class PostRepositoryMemoryImpl : PostRepository {
 
-    private var post = listOf(
+    private var posts = listOf(
         Post(
             id = 1,
             author = "Нетология. Университет интернет-профессий будущего",
@@ -43,35 +43,60 @@ class PostRepositoryMemoryImpl : PostRepository {
             view = generateRandom(3, 1000, 150000)
         )
     )
+    private var nextId: Int = posts.size + 1
 
-    private val data = MutableLiveData(post)
+    private val data = MutableLiveData(posts)
 
     override fun get(): LiveData<List<Post>> = data
 
     override fun likeById(id: Int) {
-        post.map { p ->
+        posts.map { p ->
             if (p.id == id) {
                 p.likeOrNot()
             } else {
                 p
             }
         }.apply {
-            post = this
+            posts = this
             data.value = this
         }
     }
 
     override fun shareById(id: Int) {
-        post.map { p ->
+        posts.map { p ->
             if (p.id == id) {
                 p.shareMe()
             } else {
                 p
             }
         }.apply {
-            post = this
+            posts = this
             data.value = this
         }
+    }
+
+    override fun removeById(id: Int) {
+        posts.filter { p ->
+            p.id != id
+        }.apply {
+            posts = this
+            data.value = this
+        }
+    }
+
+    override fun save(post: Post) {
+        if (post.id == 0) {
+            posts = listOf(post.copy(id = nextId++, author = "Me", published = "now")) + posts
+        } else {
+            posts = posts.map { p ->
+                if (p.id == post.id) {
+                    p.copy(content = post.content)
+                } else {
+                    p
+                }
+            }
+        }
+        data.value = posts
     }
 
     private fun generateRandom(seed: Int, min: Int, max: Int): Int {
