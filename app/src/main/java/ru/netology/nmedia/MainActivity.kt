@@ -2,6 +2,7 @@ package ru.netology.nmedia
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -68,27 +69,42 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.editPost.observe(this, { post ->
             if (post.id != 0) {
-                with(binding.content) {
-                    setText(post.content)
-                    setSelection(post.content.length)
-                    showKeyboard()
-                }
+                showEditLayout(post)
             }
         })
-        binding.save.setOnClickListener {
-            with(binding.content) {
-                val newPostText = text.toString()
-                if (newPostText.isBlank()) {
-                    Toast.makeText(context, R.string.error_empty_context, Toast.LENGTH_SHORT).show()
-                    return@setOnClickListener
-                }
-                viewModel.changeContent(newPostText)
-                viewModel.save()
-
-                setText("")
-                clearFocus()
-                hideKeyboard()
-            }
+        binding.cancel.setOnClickListener {
+            viewModel.cancel()
+            hideEditLayout()
         }
+        binding.save.setOnClickListener {
+            val newPostText = binding.content.text.toString()
+            if (newPostText.isBlank()) {
+                Toast.makeText(
+                    binding.root.context,
+                    R.string.error_empty_context,
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+            viewModel.changeContent(newPostText)
+            viewModel.save()
+
+            hideEditLayout()
+        }
+    }
+
+    private fun showEditLayout(post: Post) {
+        binding.oldContent.text = post.content
+        binding.editCancelGroup.visibility = View.VISIBLE
+        binding.content.setText(post.content)
+        binding.content.setSelection(post.content.length)
+        binding.content.showKeyboard()
+    }
+
+    private fun hideEditLayout() {
+        binding.editCancelGroup.visibility = View.GONE
+        binding.content.setText("")
+        binding.content.clearFocus()
+        binding.content.hideKeyboard()
     }
 }

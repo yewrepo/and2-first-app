@@ -7,4 +7,6 @@
     <string name="description_save_button">Save button</string>
     <string name="error_empty_context">Can\'t save empty text</string>
     <string name="option_action_edit">Edit</string>
+    <string name="edit_cancel_button">Edit cancel button</string>
+    <string name="edit_post_title">Edit post</string>
 </resources>
