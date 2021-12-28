@@ -45,12 +45,12 @@
         app:layout_constraintTop_toBottomOf="@id/author"
         tools:text="@sample/posts.json/data/published" />
 
-    <androidx.appcompat.widget.AppCompatImageView
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/menu"
+        style="@style/Widget.AppTheme.SimpleButton.OnlyIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:src="@drawable/ic_baseline_more_vert_24"
+        app:icon="@drawable/ic_baseline_more_vert_24"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/author" />
 
@@ -81,27 +81,23 @@
         app:barrierDirection="bottom"
         app:constraint_referenced_ids="avatar,content" />
 
-    <TextView
+    <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/likes"
+        style="@style/Widget.AppTheme.LikeCheckBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/default_spacing"
-        android:drawablePadding="4dp"
-        android:gravity="center"
-        app:drawableStartCompat="@drawable/ic_fill_like_24dp"
+        android:button="@drawable/like_state_list"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/barrier_bottom"
         tools:text="12k" />
 
-    <TextView
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/share"
+        style="@style/Widget.AppTheme.SimpleButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="@dimen/default_spacing"
-        android:drawablePadding="4dp"
-        android:gravity="center"
-        app:drawableStartCompat="@drawable/ic_outline_share_24dp"
+        app:icon="@drawable/ic_outline_share_24dp"
         app:layout_constraintStart_toEndOf="@+id/likes"
         app:layout_constraintTop_toBottomOf="@id/barrier_bottom"
         tools:text="12k" />

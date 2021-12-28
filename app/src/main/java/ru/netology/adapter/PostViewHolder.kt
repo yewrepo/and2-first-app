@@ -64,9 +64,7 @@ class PostViewHolder(
 
     private fun setLikes(post: Post) {
         binding.likes.text = post.likes.shortFormat()
-        val resId =
-            if (post.likedByMe) R.drawable.ic_fill_liked_24dp else R.drawable.ic_fill_like_24dp
-        binding.likes.setCompoundDrawablesRelativeWithIntrinsicBounds(resId, 0, 0, 0)
+        binding.likes.isChecked = post.likedByMe
     }
 
     companion object {
