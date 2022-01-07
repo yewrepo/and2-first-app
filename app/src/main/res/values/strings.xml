@@ -3,10 +3,15 @@
     <string name="some_text">NMedia!</string>
     <string name="description_avatar">User avatar</string>
     <string name="option_action_remove">Remove</string>
-    <string name="post_text">Enter text</string>
+    <string name="post_text">Edit post text</string>
     <string name="description_save_button">Save button</string>
     <string name="error_empty_context">Can\'t save empty text</string>
     <string name="option_action_edit">Edit</string>
     <string name="edit_cancel_button">Edit cancel button</string>
     <string name="edit_post_title">Edit post</string>
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="title_edit">Edit post</string>
+    <string name="title_create">New post</string>
+    <string name="action_create">Create post</string>
 </resources>

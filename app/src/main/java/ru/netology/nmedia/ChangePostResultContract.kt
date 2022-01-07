@@ -16,6 +16,8 @@ data class ChangePostData(
 
     fun isEmpty() = id == -1
 
+    constructor(post: Post) : this(post.id, post.content)
+
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
         parcel.readString()
@@ -44,8 +46,6 @@ data class ChangePostData(
 
 class ChangePostResultContract : ActivityResultContract<ChangePostData, ChangePostData>() {
 
-    private val extraKey = "ChangePostData"
-
     override fun createIntent(context: Context, input: ChangePostData): Intent =
         Intent(context, ChangePostActivity::class.java).also { intent ->
             intent.putExtra(extraKey, input)
@@ -59,5 +59,9 @@ class ChangePostResultContract : ActivityResultContract<ChangePostData, ChangePo
                 emptyResult
             }
         } ?: emptyResult
+    }
+
+    companion object{
+        public const val extraKey = "ChangePostData"
     }
 }

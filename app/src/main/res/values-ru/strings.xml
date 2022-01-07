@@ -4,10 +4,14 @@
     <string name="some_text">НМедиа!</string>
     <string name="description_avatar">Аватар пользователя</string>
     <string name="option_action_remove">Удалить</string>
-    <string name="post_text">Введите текст</string>
+    <string name="post_text">Редактирование поста</string>
     <string name="description_save_button">Кнопка сохранения</string>
     <string name="error_empty_context">Нельзя добавить пустой текст</string>
     <string name="option_action_edit">Редактировать</string>
     <string name="edit_cancel_button">Отмена редактирования</string>
     <string name="edit_post_title">Редактирование</string>
+    <string name="action_save">Сохранить</string>
+    <string name="action_cancel">Отменить</string>
+    <string name="title_edit">Редактирование</string>
+    <string name="title_create">Создание</string>
 </resources>

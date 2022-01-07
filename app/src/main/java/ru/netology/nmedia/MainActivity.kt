@@ -2,15 +2,14 @@ package ru.netology.nmedia
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
-import android.widget.Toast
+
+import android.view.Menu
+import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.netology.adapter.ClickCallback
 import ru.netology.adapter.PostAdapter
-import ru.netology.extension.hideKeyboard
-import ru.netology.extension.showKeyboard
 import ru.netology.nmedia.databinding.ActivityMainBinding
 import ru.netology.vm.PostViewModel
 
@@ -20,6 +19,17 @@ class MainActivity : AppCompatActivity() {
 
     private val viewModel: PostViewModel by viewModels()
     private var postAdapter: PostAdapter? = null
+
+    private val changePostLauncher = registerForActivityResult(
+        ChangePostResultContract()
+    ) { result ->
+        if (result.isEmpty().not()) {
+            viewModel.changeContent(result.text!!)
+            viewModel.save()
+        } else {
+            viewModel.cancel()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,42 +79,22 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.editPost.observe(this, { post ->
             if (post.id != 0) {
-                showEditLayout(post)
+                changePostLauncher.launch(ChangePostData(post))
             }
         })
-        binding.cancel.setOnClickListener {
-            viewModel.cancel()
-            hideEditLayout()
-        }
-        binding.save.setOnClickListener {
-            val newPostText = binding.content.text.toString()
-            if (newPostText.isBlank()) {
-                Toast.makeText(
-                    binding.root.context,
-                    R.string.error_empty_context,
-                    Toast.LENGTH_SHORT
-                ).show()
-                return@setOnClickListener
-            }
-            viewModel.changeContent(newPostText)
-            viewModel.save()
-
-            hideEditLayout()
-        }
     }
 
-    private fun showEditLayout(post: Post) {
-        binding.oldContent.text = post.content
-        binding.editCancelGroup.visibility = View.VISIBLE
-        binding.content.setText(post.content)
-        binding.content.setSelection(post.content.length)
-        binding.content.showKeyboard()
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.main, menu)
+        return true
     }
 
-    private fun hideEditLayout() {
-        binding.editCancelGroup.visibility = View.GONE
-        binding.content.setText("")
-        binding.content.clearFocus()
-        binding.content.hideKeyboard()
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return if (item.itemId == R.id.action_add_post) {
+            changePostLauncher.launch(ChangePostData(0, ""))
+            true
+        } else
+            false
     }
+
 }
