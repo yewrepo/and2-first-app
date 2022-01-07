@@ -14,4 +14,7 @@
     <string name="action_cancel">Отменить</string>
     <string name="title_edit">Редактирование</string>
     <string name="title_create">Создание</string>
+    <string name="youtube_link_text">Ссылка на видео</string>
+    <string name="action_create">Создать пост</string>
+    <string name="error_youtube_link">Плохая ссылка!</string>
 </resources>

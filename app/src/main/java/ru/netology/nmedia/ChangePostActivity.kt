@@ -46,10 +46,15 @@ class ChangePostActivity : AppCompatActivity() {
         return Intent().also {
             it.putExtra(
                 ChangePostResultContract.extraKey,
-                inputData.copy(text = getInputtedText())
+                inputData.copy(
+                    text = getInputtedText(),
+                    youtubeLink = getInputtedLinkText()
+                )
             )
         }
     }
 
     private fun getInputtedText() = binding.content.text?.toString().orEmpty()
+
+    private fun getInputtedLinkText() = binding.videoLink.text?.toString().orEmpty()
 }

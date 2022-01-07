@@ -31,6 +31,31 @@
             android:padding="@dimen/default_spacing" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/edit_layout_video"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:hint="@string/youtube_link_text"
+        android:labelFor="@id/content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/edit_layout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/video_link"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:importantForAutofill="no"
+            android:inputType="textMultiLine"
+            android:maxLines="6"
+            android:minHeight="?attr/actionBarSize"
+            android:padding="@dimen/default_spacing" />
+    </com.google.android.material.textfield.TextInputLayout>
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/save"
         style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
@@ -40,7 +65,7 @@
         android:layout_marginTop="8dp"
         android:text="@string/action_save"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_layout" />
+        app:layout_constraintTop_toBottomOf="@+id/edit_layout_video" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/cancel"
@@ -51,5 +76,5 @@
         android:layout_marginEnd="16dp"
         android:text="@string/action_cancel"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_layout" />
+        app:layout_constraintTop_toBottomOf="@+id/edit_layout_video" />
 </androidx.constraintlayout.widget.ConstraintLayout>

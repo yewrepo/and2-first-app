@@ -1,6 +1,7 @@
 package ru.netology.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
@@ -15,6 +16,9 @@ class PostViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     init {
+        binding.youtubeButton.setOnClickListener {
+            callback.onYoutubeLinkClick(bindingAdapterPosition)
+        }
         binding.likes.setOnClickListener {
             callback.onLikeClick(bindingAdapterPosition)
         }
@@ -46,12 +50,18 @@ class PostViewHolder(
             setViews(post)
             setShare(post)
             setLikes(post)
+            setYoutubeLink(post)
             with(binding) {
                 author.text = post.author
                 content.text = post.content
                 published.text = post.published
             }
         }
+    }
+
+    private fun setYoutubeLink(post: Post) {
+        binding.youtubeButton.visibility =
+            if (post.youtubeLink.isNullOrBlank()) View.GONE else View.VISIBLE
     }
 
     private fun setViews(post: Post) {

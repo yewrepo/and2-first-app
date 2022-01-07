@@ -12,20 +12,23 @@ val emptyResult = ChangePostData(-1, "")
 data class ChangePostData(
     val id: Int,
     val text: String?,
+    val youtubeLink: String? = null,
 ) : Parcelable {
 
     fun isEmpty() = id == -1
 
-    constructor(post: Post) : this(post.id, post.content)
+    constructor(post: Post) : this(post.id, post.content, post.youtubeLink)
 
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
+        parcel.readString(),
         parcel.readString()
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(id)
         parcel.writeString(text)
+        parcel.writeString(youtubeLink)
     }
 
     override fun describeContents(): Int {
@@ -41,6 +44,7 @@ data class ChangePostData(
             return arrayOfNulls(size)
         }
     }
+
 
 }
 
@@ -61,7 +65,7 @@ class ChangePostResultContract : ActivityResultContract<ChangePostData, ChangePo
         } ?: emptyResult
     }
 
-    companion object{
-        public const val extraKey = "ChangePostData"
+    companion object {
+        const val extraKey = "ChangePostData"
     }
 }

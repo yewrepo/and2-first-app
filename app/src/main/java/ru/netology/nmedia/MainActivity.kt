@@ -12,6 +12,10 @@ import ru.netology.adapter.ClickCallback
 import ru.netology.adapter.PostAdapter
 import ru.netology.nmedia.databinding.ActivityMainBinding
 import ru.netology.vm.PostViewModel
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         ChangePostResultContract()
     ) { result ->
         if (result.isEmpty().not()) {
-            viewModel.changeContent(result.text!!)
+            viewModel.changeContent(result.text!!, result.youtubeLink)
             viewModel.save()
         } else {
             viewModel.cancel()
@@ -61,6 +65,12 @@ class MainActivity : AppCompatActivity() {
                     viewModel.edit(existed)
                 }
             }
+
+            override fun onYoutubeLinkClick(position: Int) {
+                postAdapter?.apply {
+                    openYoutube(this.currentList[position])
+                }
+            }
         })
 
         binding.recycler.layoutManager =
@@ -82,6 +92,21 @@ class MainActivity : AppCompatActivity() {
                 changePostLauncher.launch(ChangePostData(post))
             }
         })
+    }
+
+    private fun openYoutube(post: Post?) {
+        post?.apply {
+            try {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(this.youtubeLink))
+                startActivity(intent)
+            } catch (e: Exception) {
+                Toast.makeText(
+                    binding.root.context,
+                    R.string.error_youtube_link,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

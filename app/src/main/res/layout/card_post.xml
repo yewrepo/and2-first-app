@@ -61,25 +61,39 @@
         app:barrierDirection="bottom"
         app:constraint_referenced_ids="avatar,published,menu" />
 
-    <TextView
-        android:id="@+id/content"
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/content_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/default_spacing"
-        android:layout_marginBottom="@dimen/default_spacing"
-        android:autoLink="web"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="@id/barrier_bottom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/barrier"
-        tools:text="@sample/posts.json/data/content" />
+        app:layout_constraintTop_toBottomOf="@id/barrier">
+
+        <ImageView
+            android:id="@+id/youtube_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/default_spacing"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_youtube_icon" />
+
+        <TextView
+            android:id="@+id/content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/default_spacing"
+            android:autoLink="web"
+            tools:text="@sample/posts.json/data/content" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/barrier_bottom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:barrierDirection="bottom"
-        app:constraint_referenced_ids="avatar,content" />
+        app:constraint_referenced_ids="avatar,content_layout" />
 
     <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/likes"

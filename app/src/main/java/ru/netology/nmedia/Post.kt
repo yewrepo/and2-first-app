@@ -9,4 +9,5 @@ data class Post(
     val likes: Int = 0,
     val share: Int = 0,
     val view: Int = 0,
+    val youtubeLink: String? = null
 )

@@ -14,4 +14,6 @@
     <string name="title_edit">Edit post</string>
     <string name="title_create">New post</string>
     <string name="action_create">Create post</string>
+    <string name="youtube_link_text">Youtube link</string>
+    <string name="error_youtube_link">Bad youtube link!</string>
 </resources>
