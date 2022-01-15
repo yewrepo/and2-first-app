@@ -9,7 +9,7 @@ import kotlin.random.Random
 
 class PostRepositoryMemoryImpl : PostRepository {
 
-    private var posts = listOf(
+    private var posts: MutableList<Post> = mutableListOf(
         Post(
             id = 1,
             author = "Нетология. Университет интернет-профессий будущего",
@@ -47,7 +47,7 @@ class PostRepositoryMemoryImpl : PostRepository {
 
     private val data = MutableLiveData(posts)
 
-    override fun get(): LiveData<List<Post>> = data
+    override fun get(): LiveData<MutableList<Post>> = data
 
     override fun likeById(id: Int) {
         posts.map { p ->
@@ -57,8 +57,8 @@ class PostRepositoryMemoryImpl : PostRepository {
                 p
             }
         }.apply {
-            posts = this
-            data.value = this
+            posts = this.toMutableList()
+            data.value = this.toMutableList()
         }
     }
 
@@ -70,8 +70,8 @@ class PostRepositoryMemoryImpl : PostRepository {
                 p
             }
         }.apply {
-            posts = this
-            data.value = this
+            posts = this.toMutableList()
+            data.value = this.toMutableList()
         }
     }
 
@@ -79,14 +79,21 @@ class PostRepositoryMemoryImpl : PostRepository {
         posts.filter { p ->
             p.id != id
         }.apply {
-            posts = this
-            data.value = this
+            posts = this.toMutableList()
+            data.value = this.toMutableList()
         }
     }
 
     override fun save(post: Post) {
         if (post.id == 0) {
-            posts = listOf(post.copy(id = nextId++, author = "Me", published = "now")) + posts
+            posts =
+                (mutableListOf(
+                    post.copy(
+                        id = nextId++,
+                        author = "Me",
+                        published = "now"
+                    )
+                ) + posts) as MutableList<Post>
         } else {
             posts = posts.map { p ->
                 if (p.id == post.id) {
@@ -94,7 +101,7 @@ class PostRepositoryMemoryImpl : PostRepository {
                 } else {
                     p
                 }
-            }
+            }.toMutableList()
         }
         data.value = posts
     }
