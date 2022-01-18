@@ -22,7 +22,7 @@ class PostViewModel(
     app: Application,
 ) : AndroidViewModel(app) {
 
-    private val repository: PostRepository = PostRepositoryFileImpl(app)
+    private val repository: PostRepository = PrefsPostRepositoryImpl(app)
     val data = repository.get()
 
     private val edited = MutableLiveData(emptyPost)
