@@ -7,7 +7,7 @@ import ru.netology.extension.shareMe
 import ru.netology.nmedia.Post
 import kotlin.random.Random
 
-class PostRepositoryMemoryImpl : PostRepository {
+class MemoryPostRepositoryImpl : PostRepository {
 
     private var posts = listOf(
         Post(

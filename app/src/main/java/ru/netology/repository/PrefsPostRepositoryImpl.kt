@@ -9,16 +9,16 @@ import ru.netology.extension.likeOrNot
 import ru.netology.extension.shareMe
 import ru.netology.nmedia.Post
 
-class PostRepositoryFileImpl(c: Context) : PostRepository {
+class PrefsPostRepositoryImpl(c: Context) : PostRepository {
 
     private val gson = Gson()
     private val prefs = c.getSharedPreferences("repo", Context.MODE_PRIVATE)
     private val type = TypeToken.getParameterized(List::class.java, Post::class.java).type
     private val key = "posts"
     private var nextId: Int = 1
-    private var posts = mutableListOf<Post>()
+    private var posts = listOf<Post>()
 
-    private val data: MutableLiveData<MutableList<Post>> = MutableLiveData()
+    private val data: MutableLiveData<List<Post>> = MutableLiveData()
 
     init {
         prefs.getString(key, null)?.let {
@@ -27,7 +27,7 @@ class PostRepositoryFileImpl(c: Context) : PostRepository {
         }
     }
 
-    override fun get(): LiveData<MutableList<Post>> = data
+    override fun get(): LiveData<List<Post>> = data
 
     override fun likeById(id: Int) {
         posts.map { p ->
@@ -37,8 +37,8 @@ class PostRepositoryFileImpl(c: Context) : PostRepository {
                 p
             }
         }.apply {
-            posts = this.toMutableList()
-            data.value = this.toMutableList()
+            posts = this
+            data.value = this
             sync()
         }
     }
@@ -51,8 +51,8 @@ class PostRepositoryFileImpl(c: Context) : PostRepository {
                 p
             }
         }.apply {
-            posts = this.toMutableList()
-            data.value = this.toMutableList()
+            posts = this
+            data.value = this
             sync()
         }
     }
@@ -61,8 +61,8 @@ class PostRepositoryFileImpl(c: Context) : PostRepository {
         posts.filter { p ->
             p.id != id
         }.apply {
-            posts = this.toMutableList()
-            data.value = this.toMutableList()
+            posts = this
+            data.value = this
             sync()
         }
     }
@@ -70,13 +70,13 @@ class PostRepositoryFileImpl(c: Context) : PostRepository {
     override fun save(post: Post) {
         if (post.id == 0) {
             posts =
-                (mutableListOf(
+                listOf(
                     post.copy(
                         id = nextId++,
                         author = "Me",
                         published = "now"
                     )
-                ) + posts) as MutableList<Post>
+                ) + posts
         } else {
             posts = posts.map { p ->
                 if (p.id == post.id) {
