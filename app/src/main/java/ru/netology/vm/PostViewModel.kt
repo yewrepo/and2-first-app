@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ru.netology.nmedia.Post
 import ru.netology.repository.PostRepository
-import ru.netology.repository.PostRepositoryFileImpl
+import ru.netology.repository.PrefsPostRepositoryImpl
 
 private var emptyPost = Post(
     id = 0,
