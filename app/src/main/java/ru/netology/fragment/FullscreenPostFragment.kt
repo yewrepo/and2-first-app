@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import ru.netology.adapter.ClickCallback
 import ru.netology.adapter.PostViewHolder
 import ru.netology.extension.PostDataArg
@@ -71,10 +72,10 @@ class FullscreenPostFragment : Fragment() {
         viewModel.data.observe(viewLifecycleOwner, { posts ->
             posts.find {
                 it.id == inputData.id
-            }?.apply {
-                inputData = this
+            }?.let {
+                inputData = it
                 postHolder.bind(inputData)
-            }
+            } ?: findNavController().navigateUp()
         })
 
         viewModel.editPost.observe(viewLifecycleOwner, { post ->
