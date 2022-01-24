@@ -90,17 +90,16 @@ class MemoryPostRepositoryImpl : PostRepository {
         } else {
             posts = posts.map { p ->
                 if (p.id == post.id) {
-                    p.copy(content = post.content)
+                    p.copy(
+                        content = post.content,
+                        youtubeLink = post.youtubeLink
+                    )
                 } else {
                     p
                 }
             }
         }
         data.value = posts
-    }
-
-    override fun findById(id: Int): Post? = posts.find {
-        it.id == id
     }
 
     private fun generateRandom(seed: Int, min: Int, max: Int): Int {

@@ -10,14 +10,14 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import ru.netology.extension.PostDataArg
 import ru.netology.extension.hideKeyboard
-import ru.netology.nmedia.ChangePostData
+import ru.netology.nmedia.Post
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentChangePostBinding
 import ru.netology.vm.PostViewModel
 
 class ChangePostFragment : Fragment(R.layout.fragment_change_post) {
 
-    private var inputData: ChangePostData? = null
+    private var inputData: Post? = null
     private lateinit var binding: FragmentChangePostBinding
 
     private val viewModel: PostViewModel by viewModels(
@@ -41,7 +41,8 @@ class ChangePostFragment : Fragment(R.layout.fragment_change_post) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.content.setText(inputData?.text.orEmpty())
+        binding.content.setText(inputData?.content.orEmpty())
+        binding.videoLink.setText(inputData?.youtubeLink.orEmpty())
 
         binding.save.setOnClickListener {
             if (getInputtedText().isEmpty()) {
@@ -68,6 +69,6 @@ class ChangePostFragment : Fragment(R.layout.fragment_change_post) {
     private fun getInputtedLinkText() = binding.videoLink.text?.toString().orEmpty()
 
     companion object {
-        var Bundle.postData: ChangePostData? by PostDataArg
+        var Bundle.postData: Post? by PostDataArg
     }
 }

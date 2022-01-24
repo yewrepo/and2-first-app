@@ -1,22 +1,17 @@
 package ru.netology.fragment
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.netology.adapter.ClickCallback
 import ru.netology.adapter.PostAdapter
-import ru.netology.fragment.ChangePostFragment.Companion.postData
-import ru.netology.nmedia.ChangePostData
-import ru.netology.nmedia.Post
+import ru.netology.extension.navigate
+import ru.netology.extension.openYoutube
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.vm.PostViewModel
@@ -43,6 +38,15 @@ class FeedFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         postAdapter = PostAdapter(object : ClickCallback {
+            override fun onOpenClick(position: Int) {
+                 postAdapter?.apply {
+                     navigate(
+                         R.id.action_feedFragment_to_fullscreenPostFragment,
+                         currentList[position]
+                     )
+                 }
+            }
+
             override fun onLikeClick(position: Int) {
                 postAdapter?.apply {
                     viewModel.likeById(this.currentList[position].id)
@@ -70,7 +74,7 @@ class FeedFragment : Fragment() {
 
             override fun onYoutubeLinkClick(position: Int) {
                 postAdapter?.apply {
-                    openYoutube(this.currentList[position])
+                    this.currentList[position].openYoutube(requireActivity())
                 }
             }
         })
@@ -91,35 +95,11 @@ class FeedFragment : Fragment() {
 
         viewModel.editPost.observe(viewLifecycleOwner, { post ->
             if (post.id != 0) {
-                findNavController().navigate(
-                    R.id.action_feedFragment_to_changePostFragment,
-                    Bundle().apply {
-                        postData = ChangePostData(post)
-                    })
+                navigate(R.id.action_feedFragment_to_changePostFragment, post)
             }
         })
         binding.addNewFab.setOnClickListener {
-            findNavController().navigate(
-                R.id.action_feedFragment_to_changePostFragment,
-                Bundle().apply {
-                    postData = ChangePostData(0, "")
-                })
-        }
-    }
-
-
-    private fun openYoutube(post: Post?) {
-        post?.apply {
-            try {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(this.youtubeLink))
-                startActivity(intent)
-            } catch (e: Exception) {
-                Toast.makeText(
-                    binding.root.context,
-                    R.string.error_youtube_link,
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+            navigate(R.id.action_feedFragment_to_changePostFragment)
         }
     }
 

@@ -13,7 +13,6 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import ru.netology.fragment.ChangePostFragment.Companion.postData
-import ru.netology.nmedia.ChangePostData
 import ru.netology.nmedia.Post
 import ru.netology.nmedia.R
 import java.util.*
@@ -74,16 +73,16 @@ fun Post?.openYoutube(activity: Activity) {
 
 fun Fragment.navigate(id: Int, post: Post? = null) {
     findNavController().navigate(id, Bundle().apply {
-        postData = if (post == null) ChangePostData(0, "") else ChangePostData(post)
+        postData = post ?: Post.emptyPost()
     })
 }
 
-object PostDataArg : ReadWriteProperty<Bundle, ChangePostData?> {
-    override fun getValue(thisRef: Bundle, property: KProperty<*>): ChangePostData? {
+object PostDataArg : ReadWriteProperty<Bundle, Post?> {
+    override fun getValue(thisRef: Bundle, property: KProperty<*>): Post? {
         return thisRef.getParcelable(property.name)
     }
 
-    override fun setValue(thisRef: Bundle, property: KProperty<*>, value: ChangePostData?) {
+    override fun setValue(thisRef: Bundle, property: KProperty<*>, value: Post?) {
         thisRef.putParcelable(property.name, value)
     }
 }

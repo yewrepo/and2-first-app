@@ -81,7 +81,10 @@ class PrefsPostRepositoryImpl(c: Context) : PostRepository {
         } else {
             posts = posts.map { p ->
                 if (p.id == post.id) {
-                    p.copy(content = post.content)
+                    p.copy(
+                        content = post.content,
+                        youtubeLink = post.youtubeLink
+                    )
                 } else {
                     p
                 }
@@ -89,10 +92,6 @@ class PrefsPostRepositoryImpl(c: Context) : PostRepository {
         }
         data.value = posts
         sync()
-    }
-
-    override fun findById(id: Int): Post? = posts.find {
-        it.id == id
     }
 
     private fun sync() {

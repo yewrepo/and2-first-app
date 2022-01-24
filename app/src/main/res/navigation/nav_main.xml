@@ -16,9 +16,20 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_feedFragment_to_fullscreenPostFragment"
+            app:destination="@id/fullscreenPostFragment" />
     </fragment>
     <fragment
         android:id="@+id/changePostFragment"
         android:name="ru.netology.fragment.ChangePostFragment"
         android:label="ChangePostFragment" />
+    <fragment
+        android:id="@+id/fullscreenPostFragment"
+        android:name="ru.netology.fragment.FullscreenPostFragment"
+        android:label="FullscreenPostFragment">
+        <action
+            android:id="@+id/action_fullscreenPostFragment_to_changePostFragment"
+            app:destination="@id/changePostFragment" />
+    </fragment>
 </navigation>

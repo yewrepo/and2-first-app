@@ -16,6 +16,9 @@ class PostViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     init {
+        binding.root.setOnClickListener {
+            callback.onOpenClick(bindingAdapterPosition)
+        }
         binding.youtubeButton.setOnClickListener {
             callback.onYoutubeLinkClick(bindingAdapterPosition)
         }

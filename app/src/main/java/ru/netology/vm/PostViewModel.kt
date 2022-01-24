@@ -56,12 +56,6 @@ class PostViewModel(
         }
     }
 
-    fun editById(id: Int) {
-        repository.findById(id)?.apply {
-            edited.value = this
-        }
-    }
-
     fun likeById(id: Int) = repository.likeById(id)
     fun shareById(id: Int) = repository.shareById(id)
     fun removeById(id: Int) = repository.removeById(id)
