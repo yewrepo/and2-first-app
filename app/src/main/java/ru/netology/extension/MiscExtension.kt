@@ -2,11 +2,15 @@ package ru.netology.extension
 
 import android.content.Context
 import android.icu.text.CompactDecimalFormat
+import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import ru.netology.nmedia.ChangePostData
 import ru.netology.nmedia.Post
 import java.util.*
+import kotlin.properties.ReadWriteProperty
+import kotlin.reflect.KProperty
 
 fun Int.shortFormat(): String {
     if (this > 0) {
@@ -44,5 +48,15 @@ fun View?.showKeyboard() = this?.apply {
             val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.showSoftInput(this, 0)
         }, 100)
+    }
+}
+
+object PostDataArg : ReadWriteProperty<Bundle, ChangePostData?> {
+    override fun getValue(thisRef: Bundle, property: KProperty<*>): ChangePostData? {
+        return thisRef.getParcelable(property.name)
+    }
+
+    override fun setValue(thisRef: Bundle, property: KProperty<*>, value: ChangePostData?) {
+        thisRef.putParcelable(property.name, value)
     }
 }

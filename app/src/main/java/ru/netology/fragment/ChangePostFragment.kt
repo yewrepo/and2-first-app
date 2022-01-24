@@ -8,16 +8,17 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import ru.netology.extension.PostDataArg
 import ru.netology.extension.hideKeyboard
 import ru.netology.nmedia.ChangePostData
 import ru.netology.nmedia.R
-import ru.netology.nmedia.databinding.ChangePostFragmentBinding
+import ru.netology.nmedia.databinding.FragmentChangePostBinding
 import ru.netology.vm.PostViewModel
 
-class ChangePostFragment : Fragment(R.layout.change_post_fragment) {
+class ChangePostFragment : Fragment(R.layout.fragment_change_post) {
 
     private var inputData: ChangePostData? = null
-    private lateinit var binding: ChangePostFragmentBinding
+    private lateinit var binding: FragmentChangePostBinding
 
     private val viewModel: PostViewModel by viewModels(
         ownerProducer = ::requireParentFragment
@@ -33,7 +34,7 @@ class ChangePostFragment : Fragment(R.layout.change_post_fragment) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = ChangePostFragmentBinding.inflate(inflater, container, false)
+        binding = FragmentChangePostBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -66,9 +67,6 @@ class ChangePostFragment : Fragment(R.layout.change_post_fragment) {
     private fun getInputtedLinkText() = binding.videoLink.text?.toString().orEmpty()
 
     companion object {
-        private const val EXTRA_POST = "EXTRA_POST"
-        var Bundle.postData: ChangePostData?
-            set(value) = putParcelable(EXTRA_POST, value)
-            get() = getParcelable(EXTRA_POST)
+        var Bundle.postData: ChangePostData? by PostDataArg
     }
 }
