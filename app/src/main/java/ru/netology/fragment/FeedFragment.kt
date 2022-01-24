@@ -1,44 +1,46 @@
-package ru.netology.nmedia
+package ru.netology.fragment
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-
-import android.view.Menu
-import android.view.MenuItem
-import androidx.activity.viewModels
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.netology.adapter.ClickCallback
 import ru.netology.adapter.PostAdapter
-import ru.netology.nmedia.databinding.ActivityMainBinding
+import ru.netology.fragment.ChangePostFragment.Companion.postData
+import ru.netology.nmedia.ChangePostData
+import ru.netology.nmedia.Post
+import ru.netology.nmedia.R
+import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.vm.PostViewModel
-import android.content.Intent
-import android.net.Uri
-import android.widget.Toast
 
+class FeedFragment : Fragment() {
 
-class MainActivity : AppCompatActivity() {
+    private lateinit var binding: FragmentFeedBinding
 
-    private lateinit var binding: ActivityMainBinding
-
-    private val viewModel: PostViewModel by viewModels()
     private var postAdapter: PostAdapter? = null
+    private val viewModel: PostViewModel by viewModels(
+        ownerProducer = ::requireParentFragment
+    )
 
-    private val changePostLauncher = registerForActivityResult(
-        ChangePostResultContract()
-    ) { result ->
-        if (result.isEmpty().not()) {
-            viewModel.changeContent(result.text!!, result.youtubeLink)
-            viewModel.save()
-        } else {
-            viewModel.cancel()
-        }
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentFeedBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         postAdapter = PostAdapter(object : ClickCallback {
             override fun onLikeClick(position: Int) {
@@ -74,9 +76,9 @@ class MainActivity : AppCompatActivity() {
         })
 
         binding.recycler.layoutManager =
-            LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+            LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
         binding.recycler.adapter = postAdapter
-        viewModel.data.observe(this, {
+        viewModel.data.observe(viewLifecycleOwner, {
             postAdapter?.apply {
                 val isPostAdd = itemCount < it.size
                 submitList(it) {
@@ -87,12 +89,24 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        viewModel.editPost.observe(this, { post ->
+        viewModel.editPost.observe(viewLifecycleOwner, { post ->
             if (post.id != 0) {
-                changePostLauncher.launch(ChangePostData(post))
+                findNavController().navigate(
+                    R.id.action_feedFragment_to_changePostFragment,
+                    Bundle().apply {
+                        postData = ChangePostData(post)
+                    })
             }
         })
+        binding.addNewFab.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_feedFragment_to_changePostFragment,
+                Bundle().apply {
+                    postData = ChangePostData(0, "")
+                })
+        }
     }
+
 
     private fun openYoutube(post: Post?) {
         post?.apply {
@@ -107,19 +121,6 @@ class MainActivity : AppCompatActivity() {
                 ).show()
             }
         }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return if (item.itemId == R.id.action_add_post) {
-            changePostLauncher.launch(ChangePostData(0, ""))
-            true
-        } else
-            false
     }
 
 }

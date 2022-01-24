@@ -1,11 +1,7 @@
 package ru.netology.nmedia
 
-import android.app.Activity.RESULT_OK
-import android.content.Context
-import android.content.Intent
 import android.os.Parcel
 import android.os.Parcelable
-import androidx.activity.result.contract.ActivityResultContract
 
 val emptyResult = ChangePostData(-1, "")
 
@@ -46,26 +42,4 @@ data class ChangePostData(
     }
 
 
-}
-
-class ChangePostResultContract : ActivityResultContract<ChangePostData, ChangePostData>() {
-
-    override fun createIntent(context: Context, input: ChangePostData): Intent =
-        Intent(context, ChangePostActivity::class.java).also { intent ->
-            intent.putExtra(extraKey, input)
-        }
-
-    override fun parseResult(resultCode: Int, intent: Intent?): ChangePostData {
-        return intent?.let {
-            if (resultCode == RESULT_OK) {
-                intent.getParcelableExtra(extraKey)
-            } else {
-                emptyResult
-            }
-        } ?: emptyResult
-    }
-
-    companion object {
-        const val extraKey = "ChangePostData"
-    }
 }
