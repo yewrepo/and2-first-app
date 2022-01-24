@@ -1,13 +1,21 @@
 package ru.netology.extension
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.icu.text.CompactDecimalFormat
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import ru.netology.fragment.ChangePostFragment.Companion.postData
 import ru.netology.nmedia.ChangePostData
 import ru.netology.nmedia.Post
+import ru.netology.nmedia.R
 import java.util.*
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -49,6 +57,25 @@ fun View?.showKeyboard() = this?.apply {
             imm.showSoftInput(this, 0)
         }, 100)
     }
+}
+
+fun Post?.openYoutube(activity: Activity) {
+    try {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(this?.youtubeLink))
+        activity.startActivity(intent)
+    } catch (e: Exception) {
+        Toast.makeText(
+            activity,
+            R.string.error_youtube_link,
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+}
+
+fun Fragment.navigate(id: Int, post: Post? = null) {
+    findNavController().navigate(id, Bundle().apply {
+        postData = if (post == null) ChangePostData(0, "") else ChangePostData(post)
+    })
 }
 
 object PostDataArg : ReadWriteProperty<Bundle, ChangePostData?> {

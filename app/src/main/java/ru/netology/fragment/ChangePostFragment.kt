@@ -58,6 +58,7 @@ class ChangePostFragment : Fragment(R.layout.fragment_change_post) {
             }
         }
         binding.cancel.setOnClickListener {
+            viewModel.cancel()
             findNavController().navigateUp()
         }
     }

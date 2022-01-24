@@ -99,6 +99,10 @@ class MemoryPostRepositoryImpl : PostRepository {
         data.value = posts
     }
 
+    override fun findById(id: Int): Post? = posts.find {
+        it.id == id
+    }
+
     private fun generateRandom(seed: Int, min: Int, max: Int): Int {
         return Random(seed).nextInt(min, max)
     }

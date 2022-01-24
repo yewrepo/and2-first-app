@@ -24,6 +24,7 @@ class PrefsPostRepositoryImpl(c: Context) : PostRepository {
         prefs.getString(key, null)?.let {
             posts = gson.fromJson(it, type)
             data.value = posts
+            nextId = posts.size
         }
     }
 
@@ -88,6 +89,10 @@ class PrefsPostRepositoryImpl(c: Context) : PostRepository {
         }
         data.value = posts
         sync()
+    }
+
+    override fun findById(id: Int): Post? = posts.find {
+        it.id == id
     }
 
     private fun sync() {

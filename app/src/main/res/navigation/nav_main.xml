@@ -8,10 +8,14 @@
     <fragment
         android:id="@+id/feedFragment"
         android:name="ru.netology.fragment.FeedFragment"
-        android:label="FeedFragment" >
+        android:label="FeedFragment">
         <action
             android:id="@+id/action_feedFragment_to_changePostFragment"
-            app:destination="@id/changePostFragment" />
+            app:destination="@id/changePostFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/changePostFragment"

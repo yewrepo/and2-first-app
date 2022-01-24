@@ -45,15 +45,20 @@ class PostViewModel(
     }
 
     fun changeContent(content: String, youtubeLink: String?) {
-        edited.value?.let {
+        edited.value?.let { post ->
             val text = content.trim()
-            if (it.content == text) {
-                return
+            if (post.content != text || post.youtubeLink != youtubeLink) {
+                edited.value = post.copy(
+                    content = text,
+                    youtubeLink = youtubeLink
+                )
             }
-            edited.value = edited.value?.copy(
-                content = text,
-                youtubeLink = youtubeLink
-            )
+        }
+    }
+
+    fun editById(id: Int) {
+        repository.findById(id)?.apply {
+            edited.value = this
         }
     }
 
