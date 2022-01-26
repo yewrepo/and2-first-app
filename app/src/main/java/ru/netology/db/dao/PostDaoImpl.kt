@@ -2,30 +2,9 @@ package ru.netology.db.dao
 
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
+import ru.netology.db.PostColumns
 import ru.netology.db.mapPost
 import ru.netology.nmedia.Post
-
-object PostColumns {
-    const val TABLE = "posts"
-
-    const val COLUMN_ID = "id"
-    const val COLUMN_AUTHOR = "author"
-    const val COLUMN_CONTENT = "content"
-    const val COLUMN_PUBLISHED = "published"
-    const val COLUMN_LIKED_BY_ME = "likedByMe"
-    const val COLUMN_LIKES = "likes"
-    const val COLUMN_SHARES = "shares"
-
-    val ALL_COLUMNS = arrayOf(
-        COLUMN_ID,
-        COLUMN_AUTHOR,
-        COLUMN_CONTENT,
-        COLUMN_PUBLISHED,
-        COLUMN_LIKED_BY_ME,
-        COLUMN_LIKES,
-        COLUMN_SHARES,
-    )
-}
 
 class PostDaoImpl(
     private val db: SQLiteDatabase
@@ -101,5 +80,21 @@ class PostDaoImpl(
             it.moveToNext()
             return it.mapPost()
         }
+    }
+
+    companion object {
+
+        val DLLs = """
+            CREATE TABLE ${PostColumns.TABLE}(
+            ${PostColumns.COLUMN_ID} INTEGER PRIMARY KEY AUTOINCREMENT,
+            ${PostColumns.COLUMN_AUTHOR} TEXT NOT NULL,
+            ${PostColumns.COLUMN_CONTENT} TEXT NOT NULL,
+            ${PostColumns.COLUMN_PUBLISHED} TEXT NOT NULL,
+            ${PostColumns.COLUMN_LIKED_BY_ME} BOOLEAN NOT NULL DEFAULT 0,
+            ${PostColumns.COLUMN_LIKES} INTEGER NOT NULL DEFAULT 0,
+            ${PostColumns.COLUMN_SHARES} INTEGER NOT NULL DEFAULT 0
+            )
+        """.trimIndent()
+
     }
 }

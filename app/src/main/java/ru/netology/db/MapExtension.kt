@@ -1,7 +1,6 @@
 package ru.netology.db
 
 import android.database.Cursor
-import ru.netology.db.dao.PostColumns
 import ru.netology.nmedia.Post
 
 fun Cursor.mapPost(): Post {
