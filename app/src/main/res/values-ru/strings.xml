@@ -17,4 +17,5 @@
     <string name="youtube_link_text">Ссылка на видео</string>
     <string name="action_create">Создать пост</string>
     <string name="error_youtube_link">Плохая ссылка!</string>
+    <string name="google_api_unavailable">Сервисы гугл недоступны</string>
 </resources>
