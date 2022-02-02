@@ -18,4 +18,7 @@
     <string name="action_create">Создать пост</string>
     <string name="error_youtube_link">Плохая ссылка!</string>
     <string name="google_api_unavailable">Сервисы гугл недоступны</string>
+    <string name="channel_remote_name">Главный канал</string>
+    <string name="channel_remote_description">Разные уведомления</string>
+    <string name="notification_user_like">%1$s лайкнул пост %2$s!</string>
 </resources>

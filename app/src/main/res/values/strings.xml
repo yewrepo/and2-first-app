@@ -17,4 +17,7 @@
     <string name="youtube_link_text">Youtube link</string>
     <string name="error_youtube_link">Bad youtube link!</string>
     <string name="google_api_unavailable">Google Api unavailable</string>
+    <string name="channel_remote_name">Main Channel</string>
+    <string name="channel_remote_description">Variety of notifications</string>
+    <string name="notification_user_like">%1$s like post %2$s!</string>
 </resources>

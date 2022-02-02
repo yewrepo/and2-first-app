@@ -1,6 +1,8 @@
 package ru.netology.extension
 
 import android.app.Activity
+import android.app.Application
+import android.app.Notification
 import android.content.Context
 import android.content.Intent
 import android.icu.text.CompactDecimalFormat
@@ -15,6 +17,7 @@ import androidx.navigation.fragment.findNavController
 import ru.netology.fragment.ChangePostFragment.Companion.postData
 import ru.netology.nmedia.Post
 import ru.netology.nmedia.R
+import ru.netology.notification.Notifications
 import java.util.*
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -85,4 +88,8 @@ object PostDataArg : ReadWriteProperty<Bundle, Post?> {
     override fun setValue(thisRef: Bundle, property: KProperty<*>, value: Post?) {
         thisRef.putParcelable(property.name, value)
     }
+}
+
+fun Application.initChannels(){
+    Notifications(applicationContext).initChannels()
 }
