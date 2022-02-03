@@ -26,6 +26,12 @@ class FCMService : FirebaseMessagingService() {
                             Like::class.java
                         )
                     )
+                    Action.NEW_POST -> handleNewPost(
+                        gson.fromJson(
+                            remoteMessage.data[content],
+                            NewPost::class.java
+                        )
+                    )
                 }
             } catch (e: Exception) {
                 Log.e(tag, "$e")
@@ -38,6 +44,10 @@ class FCMService : FirebaseMessagingService() {
     }
 
     private fun handleLike(content: Like) {
-        Notifications(applicationContext).handleLike(content)
+        Notifications(applicationContext).notifyLike(content)
+    }
+
+    private fun handleNewPost(content: NewPost) {
+        Notifications(applicationContext).notifyNewPost(content)
     }
 }

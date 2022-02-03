@@ -7,6 +7,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import ru.netology.nmedia.Like
+import ru.netology.nmedia.NewPost
 import ru.netology.nmedia.R
 import kotlin.random.Random
 
@@ -29,7 +30,7 @@ class Notifications(
         }
     }
 
-    fun handleLike(content: Like) {
+    fun notifyLike(content: Like) {
         val notification = NotificationCompat.Builder(c, channelId)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(
@@ -38,6 +39,24 @@ class Notifications(
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()
 
+        NotificationManagerCompat.from(c).notify(Random.nextInt(100_000), notification)
+    }
+
+    fun notifyNewPost(content: NewPost) {
+        val notification = NotificationCompat.Builder(c, channelId)
+            .setSmallIcon(R.drawable.ic_notification)
+            .setContentTitle(
+                c.getString(
+                    R.string.notification_user_new_post,
+                    content.postAuthor
+                )
+            )
+            .setContentText(content.content)
+            .setStyle(
+                NotificationCompat.BigTextStyle()
+                    .bigText(content.contentLarge)
+            )
+            .build()
         NotificationManagerCompat.from(c).notify(Random.nextInt(100_000), notification)
     }
 }

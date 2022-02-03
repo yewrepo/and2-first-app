@@ -20,4 +20,5 @@
     <string name="channel_remote_name">Main Channel</string>
     <string name="channel_remote_description">Variety of notifications</string>
     <string name="notification_user_like">%1$s like post %2$s!</string>
+    <string name="notification_user_new_post">%1$s add new post!</string>
 </resources>

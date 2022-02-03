@@ -21,4 +21,5 @@
     <string name="channel_remote_name">Главный канал</string>
     <string name="channel_remote_description">Разные уведомления</string>
     <string name="notification_user_like">%1$s лайкнул пост %2$s!</string>
+    <string name="notification_user_new_post">%1$s добавил новый пост!</string>
 </resources>

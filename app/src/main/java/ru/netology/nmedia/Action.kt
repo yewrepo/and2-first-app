@@ -1,7 +1,8 @@
 package ru.netology.nmedia
 
 enum class Action {
-    LIKE
+    LIKE,
+    NEW_POST
 }
 
 data class Like(
@@ -9,4 +10,11 @@ data class Like(
     val userName: String,
     val postId: Int,
     val postAuthor: String
+)
+
+data class NewPost(
+    val postId: Int,
+    val postAuthor: String,
+    val content: String,
+    val contentLarge: String
 )
