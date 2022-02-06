@@ -9,6 +9,7 @@ import ru.netology.extension.shortFormat
 import ru.netology.nmedia.Post
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
+import java.util.*
 
 class PostViewHolder(
     private val binding: CardPostBinding,
@@ -57,7 +58,7 @@ class PostViewHolder(
             with(binding) {
                 author.text = post.author
                 content.text = post.content
-                published.text = post.published
+                published.text = post.published.toString()
             }
         }
     }

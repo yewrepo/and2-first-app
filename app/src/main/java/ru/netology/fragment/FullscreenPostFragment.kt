@@ -49,7 +49,7 @@ class FullscreenPostFragment : Fragment() {
             }
 
             override fun onLikeClick(position: Int) {
-                viewModel.likeById(inputData.id)
+                viewModel.likeById(inputData.id, inputData.likedByMe)
             }
 
             override fun onShareClick(position: Int) {
@@ -69,8 +69,8 @@ class FullscreenPostFragment : Fragment() {
             }
         })
         postHolder.bind(inputData)
-        viewModel.data.observe(viewLifecycleOwner, { posts ->
-            posts.find {
+        viewModel.data.observe(viewLifecycleOwner, { feedModel ->
+            feedModel.posts.find {
                 it.id == inputData.id
             }?.let {
                 inputData = it
