@@ -1,13 +1,16 @@
 package ru.netology.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ru.netology.adapter.ClickCallback
 import ru.netology.adapter.PostAdapter
 import ru.netology.extension.navigate
@@ -16,7 +19,7 @@ import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.vm.PostViewModel
 
-class FeedFragment : Fragment() {
+class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
     private lateinit var binding: FragmentFeedBinding
 
@@ -39,17 +42,18 @@ class FeedFragment : Fragment() {
 
         postAdapter = PostAdapter(object : ClickCallback {
             override fun onOpenClick(position: Int) {
-                 postAdapter?.apply {
-                     navigate(
-                         R.id.action_feedFragment_to_fullscreenPostFragment,
-                         currentList[position]
-                     )
-                 }
+                postAdapter?.apply {
+                    navigate(
+                        R.id.action_feedFragment_to_fullscreenPostFragment,
+                        currentList[position]
+                    )
+                }
             }
 
             override fun onLikeClick(position: Int) {
                 postAdapter?.apply {
-                    viewModel.likeById(this.currentList[position].id)
+                    val post = this.currentList[position]
+                    viewModel.likeById(post.id, post.likedByMe)
                 }
             }
 
@@ -79,18 +83,18 @@ class FeedFragment : Fragment() {
             }
         })
 
+        binding.retryButton.setOnClickListener {
+            viewModel.loadPosts()
+        }
+        binding.swiper.setOnRefreshListener(this)
         binding.recycler.layoutManager =
             LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
         binding.recycler.adapter = postAdapter
-        viewModel.data.observe(viewLifecycleOwner, {
-            postAdapter?.apply {
-                val isPostAdd = itemCount < it.size
-                submitList(it) {
-                    if (isPostAdd) {
-                        binding.recycler.smoothScrollToPosition(0)
-                    }
-                }
-            }
+        viewModel.data.observe(viewLifecycleOwner, { feedModel ->
+            postAdapter?.submitList(feedModel.posts)
+            binding.errorGroup.isVisible = feedModel.error
+            binding.emptyText.isVisible = feedModel.empty
+            binding.swiper.isRefreshing = feedModel.loading
         })
 
         viewModel.editPost.observe(viewLifecycleOwner, { post ->
@@ -101,6 +105,19 @@ class FeedFragment : Fragment() {
         binding.addNewFab.setOnClickListener {
             navigate(R.id.action_feedFragment_to_changePostFragment)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        postAdapter?.apply {
+            if (itemCount == 0) {
+                viewModel.loadPosts()
+            }
+        }
+    }
+
+    override fun onRefresh() {
+        viewModel.loadPosts()
     }
 
 }

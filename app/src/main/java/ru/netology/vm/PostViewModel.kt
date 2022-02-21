@@ -4,16 +4,17 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import ru.netology.AppDb
 import ru.netology.nmedia.Post
+import ru.netology.repository.NetworkPostRepositoryImpl
 import ru.netology.repository.PostRepository
-import ru.netology.repository.RoomPostRepositoryImpl
+import java.lang.Exception
+import kotlin.concurrent.thread
 
 private var emptyPost = Post(
     id = 0,
-    author = "",
+    author = "Me",
     content = "",
-    published = "",
+    published = 0,
     likes = 0,
     share = 0,
     view = 0
@@ -23,13 +24,18 @@ class PostViewModel(
     app: Application,
 ) : AndroidViewModel(app) {
 
-    private val repository: PostRepository =
-        RoomPostRepositoryImpl(AppDb.getInstance(app).postDao())
-    val data = repository.get()
+    private val repository: PostRepository = NetworkPostRepositoryImpl()
+    private val _data = MutableLiveData(FeedModel())
+    val data: LiveData<FeedModel>
+        get() = _data
 
     private val edited = MutableLiveData(emptyPost)
     val editPost: LiveData<Post>
         get() = edited
+
+    private val _postCreated = SingleLiveEvent<Unit>()
+    val postCreated: LiveData<Unit>
+        get() = _postCreated
 
     fun edit(post: Post) {
         edited.value = post
@@ -37,7 +43,10 @@ class PostViewModel(
 
     fun save() {
         edited.value?.let {
-            repository.save(it)
+            thread {
+                repository.save(it)
+                _postCreated.postValue(Unit)
+            }
         }
         edited.value = emptyPost
     }
@@ -58,7 +67,80 @@ class PostViewModel(
         }
     }
 
-    fun likeById(id: Int) = repository.likeById(id)
-    fun shareById(id: Int) = repository.shareById(id)
-    fun removeById(id: Int) = repository.removeById(id)
+    fun likeById(id: Int, liked: Boolean) {
+        thread {
+            val old = _data.value?.posts.orEmpty()
+            _data.postValue(
+                _data.value?.copy(posts = _data.value?.posts.orEmpty().let { list ->
+                    val newList = list.toMutableList()
+                    for ((index, post) in list.withIndex()) {
+                        if (post.id == id) {
+                            newList[index] = post.copy(
+                                likedByMe = !post.likedByMe,
+                                likes = post.likes + (if (post.likedByMe) -1 else 1)
+                            )
+                        }
+                    }
+                    newList
+                })
+            )
+
+            try {
+                if (liked) {
+                    repository.dislikeById(id)
+                } else {
+                    repository.likeById(id)
+                }
+            } catch (e: Exception) {
+                _data.postValue(_data.value?.copy(posts = old))
+            }
+        }
+    }
+
+    fun shareById(id: Int) {
+        _data.postValue(
+            _data.value?.copy(posts = _data.value?.posts.orEmpty().let { list ->
+                val newList = list.toMutableList()
+                for ((index, post) in list.withIndex()) {
+                    if (post.id == id) {
+                        newList[index] = post.copy(
+                            share = post.share + 1
+                        )
+                    }
+                }
+                newList
+            })
+        )
+
+        /*thread {
+            repository.shareById(id)
+        }*/
+    }
+
+    fun removeById(id: Int) {
+        thread {
+            val old = _data.value?.posts.orEmpty()
+            _data.postValue(
+                _data.value?.copy(posts = _data.value?.posts.orEmpty().filter { it.id != id }
+                )
+            )
+            try {
+                repository.removeById(id)
+            } catch (e: Exception) {
+                _data.postValue(_data.value?.copy(posts = old))
+            }
+        }
+    }
+
+    fun loadPosts() {
+        thread {
+            _data.postValue(FeedModel(loading = true))
+            try {
+                val posts = repository.get()
+                _data.postValue(FeedModel(posts = posts.value!!, loading = false))
+            } catch (e: Exception) {
+                _data.postValue(FeedModel(error = true))
+            }
+        }
+    }
 }

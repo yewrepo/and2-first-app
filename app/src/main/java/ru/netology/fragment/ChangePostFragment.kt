@@ -55,13 +55,16 @@ class ChangePostFragment : Fragment(R.layout.fragment_change_post) {
                 viewModel.changeContent(getInputtedText(), getInputtedLinkText())
                 viewModel.save()
                 requireView().hideKeyboard()
-                findNavController().navigateUp()
             }
         }
         binding.cancel.setOnClickListener {
             viewModel.cancel()
             findNavController().navigateUp()
         }
+        viewModel.postCreated.observe(viewLifecycleOwner, {
+            viewModel.loadPosts()
+            findNavController().navigateUp()
+        })
     }
 
     private fun getInputtedText() = binding.content.text?.toString().orEmpty()

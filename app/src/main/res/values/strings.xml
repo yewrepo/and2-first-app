@@ -21,4 +21,8 @@
     <string name="channel_remote_description">Variety of notifications</string>
     <string name="notification_user_like">%1$s like post %2$s!</string>
     <string name="notification_user_new_post">%1$s add new post!</string>
+    <string name="error_loading">Loading…</string>
+    <string name="retry_loading">Retry</string>
+    <string name="empty_posts">No posts</string>
+    <string name="error_text">Error has occurred</string>
 </resources>

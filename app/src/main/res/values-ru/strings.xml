@@ -22,4 +22,8 @@
     <string name="channel_remote_description">Разные уведомления</string>
     <string name="notification_user_like">%1$s лайкнул пост %2$s!</string>
     <string name="notification_user_new_post">%1$s добавил новый пост!</string>
+    <string name="error_loading">Загрузка…</string>
+    <string name="retry_loading">Повторить</string>
+    <string name="empty_posts">Нет постов</string>
+    <string name="error_text">Ошибка</string>
 </resources>

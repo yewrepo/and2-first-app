@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import ru.netology.extension.likeOrNot
 import ru.netology.extension.shareMe
 import ru.netology.nmedia.Post
+import java.util.*
 import kotlin.random.Random
 
 class MemoryPostRepositoryImpl : PostRepository {
@@ -19,7 +20,7 @@ class MemoryPostRepositoryImpl : PostRepository {
                     "Но самое важное остаётся с нами: мы верим, что в каждом уже есть сила, которая заставляет хотеть больше," +
                     " целиться выше, бежать быстрее. Наша миссия — помочь встать на путь роста и начать цепочку перемен " +
                     "→ http://netolo.gy/fyb",
-            published = "21 мая в 18:36",
+            published = Calendar.getInstance().timeInMillis,
             likes = generateRandom(1, 100, 1000),
             share = generateRandom(1, 100, 200),
             view = generateRandom(1, 1000, 150000)
@@ -28,7 +29,7 @@ class MemoryPostRepositoryImpl : PostRepository {
             id = 2,
             author = "Пост 2",
             content = "Тест поста 2",
-            published = "21 мая в 18:36",
+            published = Calendar.getInstance().timeInMillis,
             likes = generateRandom(2, 100, 1000),
             share = generateRandom(2, 100, 200),
             view = generateRandom(2, 1000, 150000)
@@ -37,7 +38,7 @@ class MemoryPostRepositoryImpl : PostRepository {
             id = 3,
             author = "Пост 3",
             content = "Тест поста 3",
-            published = "21 мая в 18:36",
+            published = Calendar.getInstance().timeInMillis,
             likes = generateRandom(3, 100, 1000),
             share = generateRandom(3, 100, 200),
             view = generateRandom(3, 1000, 150000)
@@ -50,16 +51,11 @@ class MemoryPostRepositoryImpl : PostRepository {
     override fun get(): LiveData<List<Post>> = data
 
     override fun likeById(id: Int) {
-        posts.map { p ->
-            if (p.id == id) {
-                p.likeOrNot()
-            } else {
-                p
-            }
-        }.apply {
-            posts = this
-            data.value = this
-        }
+        likeOrDislike(id)
+    }
+
+    override fun dislikeById(id: Int) {
+        likeOrDislike(id)
     }
 
     override fun shareById(id: Int) {
@@ -86,7 +82,13 @@ class MemoryPostRepositoryImpl : PostRepository {
 
     override fun save(post: Post) {
         if (post.id == 0) {
-            posts = listOf(post.copy(id = nextId++, author = "Me", published = "now")) + posts
+            posts = listOf(
+                post.copy(
+                    id = nextId++,
+                    author = "Me",
+                    published = Calendar.getInstance().timeInMillis
+                )
+            ) + posts
         } else {
             posts = posts.map { p ->
                 if (p.id == post.id) {
@@ -104,5 +106,18 @@ class MemoryPostRepositoryImpl : PostRepository {
 
     private fun generateRandom(seed: Int, min: Int, max: Int): Int {
         return Random(seed).nextInt(min, max)
+    }
+
+    private fun likeOrDislike(id: Int) {
+        posts.map { p ->
+            if (p.id == id) {
+                p.likeOrNot()
+            } else {
+                p
+            }
+        }.apply {
+            posts = this
+            data.value = this
+        }
     }
 }

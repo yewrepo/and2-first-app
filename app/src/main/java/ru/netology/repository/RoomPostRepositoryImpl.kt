@@ -29,6 +29,10 @@ class RoomPostRepositoryImpl(
         dao.likeById(id)
     }
 
+    override fun dislikeById(id: Int) {
+        dao.likeById(id)
+    }
+
     override fun shareById(id: Int) {
         dao.shareById(id)
     }

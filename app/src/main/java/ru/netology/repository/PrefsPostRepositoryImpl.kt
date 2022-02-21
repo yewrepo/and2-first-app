@@ -8,6 +8,7 @@ import com.google.gson.reflect.TypeToken
 import ru.netology.extension.likeOrNot
 import ru.netology.extension.shareMe
 import ru.netology.nmedia.Post
+import java.util.*
 
 class PrefsPostRepositoryImpl(c: Context) : PostRepository {
 
@@ -31,17 +32,11 @@ class PrefsPostRepositoryImpl(c: Context) : PostRepository {
     override fun get(): LiveData<List<Post>> = data
 
     override fun likeById(id: Int) {
-        posts.map { p ->
-            if (p.id == id) {
-                p.likeOrNot()
-            } else {
-                p
-            }
-        }.apply {
-            posts = this
-            data.value = this
-            sync()
-        }
+        likeOrDislike(id)
+    }
+
+    override fun dislikeById(id: Int) {
+        likeOrDislike(id)
     }
 
     override fun shareById(id: Int) {
@@ -75,7 +70,7 @@ class PrefsPostRepositoryImpl(c: Context) : PostRepository {
                     post.copy(
                         id = nextId++,
                         author = "Me",
-                        published = "now"
+                        published = Calendar.getInstance().timeInMillis
                     )
                 ) + posts
         } else {
@@ -98,6 +93,20 @@ class PrefsPostRepositoryImpl(c: Context) : PostRepository {
         with(prefs.edit()) {
             putString(key, gson.toJson(posts))
             apply()
+        }
+    }
+
+    private fun likeOrDislike(id: Int) {
+        posts.map { p ->
+            if (p.id == id) {
+                p.likeOrNot()
+            } else {
+                p
+            }
+        }.apply {
+            posts = this
+            data.value = this
+            sync()
         }
     }
 }

@@ -7,7 +7,7 @@ data class Post(
     val id: Int,
     val author: String?,
     val content: String?,
-    val published: String?,
+    val published: Long,
     val likedByMe: Boolean = false,
     val likes: Int = 0,
     val share: Int = 0,
@@ -19,7 +19,7 @@ data class Post(
         parcel.readInt(),
         parcel.readString(),
         parcel.readString(),
-        parcel.readString(),
+        parcel.readLong(),
         parcel.readByte() != 0.toByte(),
         parcel.readInt(),
         parcel.readInt(),
@@ -31,7 +31,7 @@ data class Post(
         parcel.writeInt(id)
         parcel.writeString(author)
         parcel.writeString(content)
-        parcel.writeString(published)
+        parcel.writeLong(published)
         parcel.writeByte(if (likedByMe) 1 else 0)
         parcel.writeInt(likes)
         parcel.writeInt(share)
@@ -57,7 +57,7 @@ data class Post(
             id = -1,
             author = "",
             content = "",
-            published = ""
+            published = 0
         )
     }
 }
