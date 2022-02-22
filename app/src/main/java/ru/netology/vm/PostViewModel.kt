@@ -1,14 +1,16 @@
 package ru.netology.vm
 
 import android.app.Application
+import android.os.Handler
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ru.netology.nmedia.Post
-import ru.netology.repository.NetworkPostRepositoryImpl
-import ru.netology.repository.PostRepository
+import ru.netology.repository.*
 import java.lang.Exception
 import kotlin.concurrent.thread
+import android.os.Looper
 
 private var emptyPost = Post(
     id = 0,
@@ -24,7 +26,11 @@ class PostViewModel(
     app: Application,
 ) : AndroidViewModel(app) {
 
-    private val repository: PostRepository = NetworkPostRepositoryImpl()
+    private val tag = this.javaClass.simpleName
+
+    var mainHandler = Handler(Looper.getMainLooper())
+
+    private val repository: PostAsyncRepository = NetworkAsyncPostRepositoryImpl()
     private val _data = MutableLiveData(FeedModel())
     val data: LiveData<FeedModel>
         get() = _data
@@ -43,12 +49,19 @@ class PostViewModel(
 
     fun save() {
         edited.value?.let {
-            thread {
-                repository.save(it)
-                _postCreated.postValue(Unit)
-            }
+            repository.save(it, callback = object : CompleteCallback {
+                override fun onSuccess() {
+                    mainHandler.post {
+                        _postCreated.postValue(Unit)
+                        edited.value = emptyPost
+                    }
+                }
+
+                override fun onError(e: Throwable) {
+                    Log.e(tag, "" + e)
+                }
+            })
         }
-        edited.value = emptyPost
     }
 
     fun cancel() {
@@ -118,29 +131,28 @@ class PostViewModel(
     }
 
     fun removeById(id: Int) {
-        thread {
-            val old = _data.value?.posts.orEmpty()
-            _data.postValue(
-                _data.value?.copy(posts = _data.value?.posts.orEmpty().filter { it.id != id }
-                )
+        val old = _data.value?.posts.orEmpty()
+        _data.postValue(
+            _data.value?.copy(posts = _data.value?.posts.orEmpty().filter { it.id != id }
             )
-            try {
-                repository.removeById(id)
-            } catch (e: Exception) {
-                _data.postValue(_data.value?.copy(posts = old))
-            }
+        )
+        try {
+            repository.removeById(id)
+        } catch (e: Exception) {
+            _data.postValue(_data.value?.copy(posts = old))
         }
     }
 
     fun loadPosts() {
-        thread {
-            _data.postValue(FeedModel(loading = true))
-            try {
-                val posts = repository.get()
-                _data.postValue(FeedModel(posts = posts.value!!, loading = false))
-            } catch (e: Exception) {
+        _data.postValue(FeedModel(loading = true))
+        val posts = repository.get(object : PostListCallback {
+            override fun onSuccess(list: List<Post>) {
+                _data.postValue(FeedModel(posts = list, loading = false))
+            }
+
+            override fun onError(e: Throwable) {
                 _data.postValue(FeedModel(error = true))
             }
-        }
+        })
     }
 }
