@@ -3,7 +3,7 @@ package ru.netology.repository
 import ru.netology.nmedia.Post
 
 interface PostAsyncRepository {
-    fun get(callback: PostListCallback)
+    fun get(callback: PostListCallback? = null)
     fun likeById(id: Int, callback: CompleteCallback? = null)
     fun dislikeById(id: Int, callback: CompleteCallback? = null)
     fun removeById(id: Int, callback: CompleteCallback? = null)

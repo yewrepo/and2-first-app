@@ -26,7 +26,7 @@ class NetworkAsyncPostRepositoryImpl : PostAsyncRepository {
         private val jsonType = "application/json".toMediaType()
     }
 
-    override fun get(callback: PostListCallback) {
+    override fun get(callback: PostListCallback?) {
         val request = Request.Builder()
             .url("${BASE_URL}/api/slow/posts")
             .build()
@@ -34,15 +34,15 @@ class NetworkAsyncPostRepositoryImpl : PostAsyncRepository {
         return client.newCall(request)
             .enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
-                    callback.onError(e)
+                    callback?.onError(e)
                 }
 
                 override fun onResponse(call: Call, response: Response) {
                     try {
                         val body = response.body?.string() ?: throw RuntimeException("body is null")
-                        callback.onSuccess(gson.fromJson(body, typeToken.type))
+                        callback?.onSuccess(gson.fromJson(body, typeToken.type))
                     } catch (e: Exception) {
-                        callback.onError(e)
+                        callback?.onError(e)
                     }
                 }
             })

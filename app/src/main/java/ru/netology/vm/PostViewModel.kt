@@ -30,7 +30,7 @@ class PostViewModel(
 
     var mainHandler = Handler(Looper.getMainLooper())
 
-    private val repository: PostAsyncRepository = NetworkAsyncPostRepositoryImpl()
+    private val repository: PostAsyncRepository = RetrofitPostRepositoryImpl()
     private val _data = MutableLiveData(FeedModel())
     val data: LiveData<FeedModel>
         get() = _data
