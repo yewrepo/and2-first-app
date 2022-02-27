@@ -2,6 +2,7 @@ package ru.netology.repository
 
 import retrofit2.Call
 import retrofit2.Callback
+import retrofit2.HttpException
 import retrofit2.Response
 import ru.netology.network.ApiClient
 import ru.netology.nmedia.Post
@@ -10,8 +11,12 @@ class RetrofitPostRepositoryImpl : PostAsyncRepository {
     override fun get(callback: PostListCallback?) {
         ApiClient.retrofitService.getAll().enqueue(object : Callback<List<Post>> {
             override fun onResponse(call: Call<List<Post>>, response: Response<List<Post>>) {
-                response.body()?.let {
-                    callback?.onSuccess(it)
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        callback?.onSuccess(it)
+                    }
+                } else {
+                    callback?.onError(HttpException(response))
                 }
             }
 
@@ -24,9 +29,7 @@ class RetrofitPostRepositoryImpl : PostAsyncRepository {
     override fun likeById(id: Int, callback: CompleteCallback?) {
         ApiClient.retrofitService.likeById(id).enqueue(object : Callback<Post> {
             override fun onResponse(call: Call<Post>, response: Response<Post>) {
-                response.body()?.let {
-                    callback?.onSuccess()
-                }
+                proceedPostResponse(response, callback)
             }
 
             override fun onFailure(call: Call<Post>, t: Throwable) {
@@ -38,9 +41,7 @@ class RetrofitPostRepositoryImpl : PostAsyncRepository {
     override fun dislikeById(id: Int, callback: CompleteCallback?) {
         ApiClient.retrofitService.dislikeById(id).enqueue(object : Callback<Post> {
             override fun onResponse(call: Call<Post>, response: Response<Post>) {
-                response.body()?.let {
-                    callback?.onSuccess()
-                }
+                proceedPostResponse(response, callback)
             }
 
             override fun onFailure(call: Call<Post>, t: Throwable) {
@@ -52,9 +53,7 @@ class RetrofitPostRepositoryImpl : PostAsyncRepository {
     override fun removeById(id: Int, callback: CompleteCallback?) {
         ApiClient.retrofitService.removeById(id).enqueue(object : Callback<Unit> {
             override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
-                response.body()?.let {
-                    callback?.onSuccess()
-                }
+                proceedResponse(response, callback)
             }
 
             override fun onFailure(call: Call<Unit>, t: Throwable) {
@@ -66,14 +65,38 @@ class RetrofitPostRepositoryImpl : PostAsyncRepository {
     override fun save(post: Post, callback: CompleteCallback?) {
         ApiClient.retrofitService.save(post).enqueue(object : Callback<Post> {
             override fun onResponse(call: Call<Post>, response: Response<Post>) {
-                response.body()?.let {
-                    callback?.onSuccess()
-                }
+                proceedPostResponse(response, callback)
             }
 
             override fun onFailure(call: Call<Post>, t: Throwable) {
                 callback?.onError(t)
             }
         })
+    }
+
+    private fun proceedResponse(
+        response: Response<Unit>,
+        callback: CompleteCallback?
+    ) {
+        if (response.isSuccessful) {
+            response.body()?.let {
+                callback?.onSuccess()
+            }
+        } else {
+            callback?.onError(HttpException(response))
+        }
+    }
+
+    private fun proceedPostResponse(
+        response: Response<Post>,
+        callback: CompleteCallback?
+    ) {
+        if (response.isSuccessful) {
+            response.body()?.let {
+                callback?.onSuccess()
+            }
+        } else {
+            callback?.onError(HttpException(response))
+        }
     }
 }
