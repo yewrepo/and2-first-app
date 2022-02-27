@@ -6,6 +6,7 @@ import android.os.Parcelable
 data class Post(
     val id: Int,
     val author: String?,
+    val authorAvatar: String? = null,
     val content: String?,
     val published: Long,
     val likedByMe: Boolean = false,
@@ -19,6 +20,7 @@ data class Post(
         parcel.readInt(),
         parcel.readString(),
         parcel.readString(),
+        parcel.readString(),
         parcel.readLong(),
         parcel.readByte() != 0.toByte(),
         parcel.readInt(),
@@ -30,6 +32,7 @@ data class Post(
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(id)
         parcel.writeString(author)
+        parcel.writeString(authorAvatar)
         parcel.writeString(content)
         parcel.writeLong(published)
         parcel.writeByte(if (likedByMe) 1 else 0)
@@ -60,4 +63,5 @@ data class Post(
             published = 0
         )
     }
+
 }

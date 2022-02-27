@@ -14,6 +14,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import ru.netology.fragment.ChangePostFragment.Companion.postData
 import ru.netology.nmedia.Post
 import ru.netology.nmedia.R
@@ -90,6 +91,8 @@ object PostDataArg : ReadWriteProperty<Bundle, Post?> {
     }
 }
 
-fun Application.initChannels(){
+fun Application.initChannels() {
     Notifications(applicationContext).initChannels()
 }
+
+fun RecyclerView.ViewHolder.getContext() = itemView.context

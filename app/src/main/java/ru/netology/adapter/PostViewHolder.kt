@@ -5,10 +5,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import ru.netology.extension.getContext
 import ru.netology.extension.shortFormat
 import ru.netology.nmedia.Post
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
+import ru.netology.repository.NetworkPostRepositoryImpl
 import java.util.*
 
 class PostViewHolder(
@@ -51,6 +54,7 @@ class PostViewHolder(
 
     fun bind(post: Post?) {
         post?.apply {
+            loadAvatar(post)
             setViews(post)
             setShare(post)
             setLikes(post)
@@ -61,6 +65,15 @@ class PostViewHolder(
                 published.text = post.published.toString()
             }
         }
+    }
+
+    private fun loadAvatar(post: Post) {
+        Glide.with(getContext())
+            .load("${NetworkPostRepositoryImpl.BASE_URL}/avatars/${post.authorAvatar}")
+            .timeout(10_000)
+            .placeholder(R.drawable.ic_broken_image_24dp)
+            .centerCrop()
+            .into(binding.avatar)
     }
 
     private fun setYoutubeLink(post: Post) {
