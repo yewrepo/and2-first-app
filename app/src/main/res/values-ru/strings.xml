@@ -26,4 +26,5 @@
     <string name="retry_loading">Повторить</string>
     <string name="empty_posts">Нет постов</string>
     <string name="error_text">Ошибка</string>
+    <string name="error_request_message">Ошибка запроса</string>
 </resources>
