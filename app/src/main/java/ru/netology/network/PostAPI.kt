@@ -1,26 +1,25 @@
 package ru.netology.network
 
-import retrofit2.Call
 import retrofit2.http.*
 import ru.netology.nmedia.Post
 
 interface PostAPI {
 
     @GET("posts")
-    fun getAll(): Call<List<Post>>
+    suspend fun getAll(): List<Post>
 
     @GET("posts/{id}")
-    fun getById(@Path("id") id: Int): Call<Post>
+    suspend fun getById(@Path("id") id: Int): Post
 
     @DELETE("posts/{id}")
-    fun removeById(@Path("id") id: Int): Call<Unit>
+    suspend fun removeById(@Path("id") id: Int)
 
     @POST("posts")
-    fun save(@Body post: Post): Call<Post>
+    suspend fun save(@Body post: Post): Post
 
     @POST("posts/{id}/likes")
-    fun likeById(@Path("id") id: Int): Call<Post>
+    suspend fun likeById(@Path("id") id: Int): Post
 
     @DELETE("posts/{id}/likes")
-    fun dislikeById(@Path("id") id: Int): Call<Post>
+    suspend fun dislikeById(@Path("id") id: Int): Post
 }
