@@ -28,5 +28,5 @@ fun Post.fromDto(): PostEntity {
     )
 }
 
-private fun List<Post>.toEntity(): List<PostEntity> = map(Post::fromDto)
-private fun List<PostEntity>.toDto(): List<Post> = map(PostEntity::toDto)
+fun List<Post>.toEntity(): List<PostEntity> = map(Post::fromDto)
+fun List<PostEntity>.toDto(): List<Post> = map(PostEntity::toDto)

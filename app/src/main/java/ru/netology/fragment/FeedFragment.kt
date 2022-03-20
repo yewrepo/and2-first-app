@@ -101,7 +101,7 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         })
 
         viewModel.editPost.observe(viewLifecycleOwner, { post ->
-            if (post.id != 0) {
+            if (post.id != 0L) {
                 navigate(R.id.action_feedFragment_to_changePostFragment, post)
             }
         })

@@ -79,7 +79,7 @@ class FullscreenPostFragment : Fragment() {
         })
 
         viewModel.editPost.observe(viewLifecycleOwner, { post ->
-            if (post.id != 0) {
+            if (post.id != 0L) {
                 navigate(R.id.action_fullscreenPostFragment_to_changePostFragment, post)
             }
         })
