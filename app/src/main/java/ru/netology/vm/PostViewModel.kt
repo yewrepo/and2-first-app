@@ -61,7 +61,6 @@ class PostViewModel(
                     repository.save(post = it)
                     _postCreated.postValue(Unit)
                     edited.value = emptyPost
-                    _loadingState.postValue(LoadingState())
                 }
             }
         }
@@ -91,7 +90,6 @@ class PostViewModel(
                 } else {
                     repository.dislikeById(id)
                 }
-                _loadingState.postValue(LoadingState())
             }
         }
     }
@@ -100,7 +98,6 @@ class PostViewModel(
         viewModelScope.launch {
             execute(defaultMessage, _loadingState) {
                 repository.removeById(id)
-                _loadingState.postValue(LoadingState())
             }
         }
     }
@@ -109,7 +106,6 @@ class PostViewModel(
         viewModelScope.launch {
             execute(defaultMessage, _loadingState) {
                 repository.getAll()
-                _loadingState.postValue(LoadingState())
             }
         }
     }
@@ -131,6 +127,7 @@ private suspend fun execute(
     try {
         data.postValue(LoadingState(isLoading = true))
         block()
+        data.postValue(LoadingState())
     } catch (e: Exception) {
         data.postValue(
             LoadingState(
