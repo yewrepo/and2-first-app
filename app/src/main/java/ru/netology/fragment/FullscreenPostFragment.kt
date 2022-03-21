@@ -53,7 +53,7 @@ class FullscreenPostFragment : Fragment() {
             }
 
             override fun onShareClick(position: Int) {
-                viewModel.shareById(inputData.id)
+                //viewModel.shareById(inputData.id)
             }
 
             override fun onRemoveClick(position: Int) {

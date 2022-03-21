@@ -1,5 +1,6 @@
 package ru.netology.repository
 
+import androidx.lifecycle.LiveData
 import ru.netology.datasource.PostDataSource
 import ru.netology.nmedia.Post
 
@@ -7,12 +8,13 @@ class RetrofitPostRepositoryImpl(
     private val remoteSource: PostDataSource,
     private val localSource: PostDataSource,
 ) : PostDataRepository {
+    override val data: LiveData<List<Post>>
+        get() = localSource.get()
 
-    override suspend fun getAll(forced: Boolean): List<Post> {
-        return if (forced) {
-            localSource.save(remoteSource.getAll())
-        } else {
-            localSource.getAll()
+    override suspend fun getAll(): List<Post> {
+        remoteSource.getAll().let {
+            localSource.save(it)
+            return it
         }
     }
 
@@ -34,8 +36,10 @@ class RetrofitPostRepositoryImpl(
         }
     }
 
-    override suspend fun save(post: Post): Post {
-        return remoteSource.save(localSource.save(post))
+    override suspend fun save(post: Post) {
+        localSource.save(post).apply {
+            remoteSource.save(this)
+        }
     }
 
 }

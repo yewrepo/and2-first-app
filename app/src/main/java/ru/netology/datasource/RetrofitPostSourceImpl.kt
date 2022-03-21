@@ -1,5 +1,7 @@
 package ru.netology.datasource
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import okio.IOException
 import retrofit2.Response
 import ru.netology.network.ApiError
@@ -11,11 +13,11 @@ import ru.netology.nmedia.Post
 class RetrofitPostSourceImpl(
     private val api: PostAPI
 ) : PostDataSource {
+    override fun get(): LiveData<List<Post>> = MutableLiveData()
 
     override suspend fun getAll(): List<Post> {
         return handleError {
-            val response = api.getAll()
-            return@handleError response.getOrThrow()
+            return@handleError api.getAll().getOrThrow()
         }
     }
 

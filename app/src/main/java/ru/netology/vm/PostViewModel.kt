@@ -1,12 +1,9 @@
 package ru.netology.vm
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.*
 import ru.netology.nmedia.Post
 import ru.netology.repository.*
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import ru.netology.AppDb
 import ru.netology.datasource.RetrofitPostSourceImpl
@@ -39,9 +36,11 @@ class PostViewModel(
         RoomPostSourceImpl(AppDb.getInstance(app.applicationContext).postDao())
     )
 
-    private val _data = MutableLiveData(FeedModel())
-    val data: LiveData<FeedModel>
-        get() = _data
+    val data = repository.data.map(::FeedModel)
+
+    private val _loadingState = MutableLiveData(LoadingState())
+    val loadingState: LiveData<LoadingState>
+        get() = _loadingState
 
     private val edited = MutableLiveData(emptyPost)
     val editPost: LiveData<Post>
@@ -58,11 +57,11 @@ class PostViewModel(
     fun save() {
         viewModelScope.launch {
             edited.value?.let {
-                execute(defaultMessage, _data) {
+                execute(defaultMessage, _loadingState) {
                     repository.save(post = it)
                     _postCreated.postValue(Unit)
                     edited.value = emptyPost
-                    _data.postValue(FeedModel(posts = repository.getAll(true)))
+                    _loadingState.postValue(LoadingState())
                 }
             }
         }
@@ -86,46 +85,31 @@ class PostViewModel(
 
     fun likeById(id: Long, liked: Boolean) {
         viewModelScope.launch {
-            execute(defaultMessage, _data) {
+            execute(defaultMessage, _loadingState) {
                 if (liked) {
                     repository.likeById(id)
                 } else {
                     repository.dislikeById(id)
                 }
-                _data.postValue(FeedModel(posts = repository.getAll(false)))
+                _loadingState.postValue(LoadingState())
             }
         }
     }
 
-    fun shareById(id: Long) {
-        _data.postValue(
-            _data.value?.copy(posts = _data.value?.posts.orEmpty().let { list ->
-                val newList = list.toMutableList()
-                for ((index, post) in list.withIndex()) {
-                    if (post.id == id) {
-                        newList[index] = post.copy(
-                            share = post.share + 1
-                        )
-                    }
-                }
-                newList
-            })
-        )
-    }
-
     fun removeById(id: Long) {
         viewModelScope.launch {
-            execute(defaultMessage, _data) {
+            execute(defaultMessage, _loadingState) {
                 repository.removeById(id)
-                _data.postValue(FeedModel(posts = repository.getAll(false)))
+                _loadingState.postValue(LoadingState())
             }
         }
     }
 
     fun loadPosts() {
         viewModelScope.launch {
-            execute(defaultMessage, _data) {
-                _data.postValue(FeedModel(posts = repository.getAll(true)))
+            execute(defaultMessage, _loadingState) {
+                repository.getAll()
+                _loadingState.postValue(LoadingState())
             }
         }
     }
@@ -141,16 +125,16 @@ private fun Throwable.toErrorModel(defaultMessage: String): ErrorData {
 
 private suspend fun execute(
     defaultMessage: String,
-    data: MutableLiveData<FeedModel>,
+    data: MutableLiveData<LoadingState>,
     block: suspend () -> Unit
 ) {
     try {
-        data.postValue(FeedModel(loading = true, posts = data.value?.posts ?: emptyList()))
+        data.postValue(LoadingState(isLoading = true))
         block()
     } catch (e: Exception) {
         data.postValue(
-            FeedModel(
-                error = true,
+            LoadingState(
+                isError = true,
                 errorDescription = e.toErrorModel(defaultMessage)
             )
         )
