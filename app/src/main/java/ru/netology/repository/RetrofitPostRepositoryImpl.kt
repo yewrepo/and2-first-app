@@ -1,102 +1,45 @@
 package ru.netology.repository
 
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.HttpException
-import retrofit2.Response
-import ru.netology.network.ApiClient
+import androidx.lifecycle.LiveData
+import ru.netology.datasource.PostDataSource
 import ru.netology.nmedia.Post
 
-class RetrofitPostRepositoryImpl : PostAsyncRepository {
-    override fun get(callback: PostListCallback?) {
-        ApiClient.retrofitService.getAll().enqueue(object : Callback<List<Post>> {
-            override fun onResponse(call: Call<List<Post>>, response: Response<List<Post>>) {
-                if (response.isSuccessful) {
-                    response.body()?.let {
-                        callback?.onSuccess(it)
-                    }
-                } else {
-                    callback?.onError(HttpException(response))
-                }
-            }
+class RetrofitPostRepositoryImpl(
+    private val remoteSource: PostDataSource,
+    private val localSource: PostDataSource,
+) : PostDataRepository {
+    override val data: LiveData<List<Post>>
+        get() = localSource.get()
 
-            override fun onFailure(call: Call<List<Post>>, t: Throwable) {
-                callback?.onError(t)
-            }
-        })
-    }
-
-    override fun likeById(id: Int, callback: CompleteCallback?) {
-        ApiClient.retrofitService.likeById(id).enqueue(object : Callback<Post> {
-            override fun onResponse(call: Call<Post>, response: Response<Post>) {
-                proceedPostResponse(response, callback)
-            }
-
-            override fun onFailure(call: Call<Post>, t: Throwable) {
-                callback?.onError(t)
-            }
-        })
-    }
-
-    override fun dislikeById(id: Int, callback: CompleteCallback?) {
-        ApiClient.retrofitService.dislikeById(id).enqueue(object : Callback<Post> {
-            override fun onResponse(call: Call<Post>, response: Response<Post>) {
-                proceedPostResponse(response, callback)
-            }
-
-            override fun onFailure(call: Call<Post>, t: Throwable) {
-                callback?.onError(t)
-            }
-        })
-    }
-
-    override fun removeById(id: Int, callback: CompleteCallback?) {
-        ApiClient.retrofitService.removeById(id).enqueue(object : Callback<Unit> {
-            override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
-                proceedResponse(response, callback)
-            }
-
-            override fun onFailure(call: Call<Unit>, t: Throwable) {
-                callback?.onError(t)
-            }
-        })
-    }
-
-    override fun save(post: Post, callback: CompleteCallback?) {
-        ApiClient.retrofitService.save(post).enqueue(object : Callback<Post> {
-            override fun onResponse(call: Call<Post>, response: Response<Post>) {
-                proceedPostResponse(response, callback)
-            }
-
-            override fun onFailure(call: Call<Post>, t: Throwable) {
-                callback?.onError(t)
-            }
-        })
-    }
-
-    private fun proceedResponse(
-        response: Response<Unit>,
-        callback: CompleteCallback?
-    ) {
-        if (response.isSuccessful) {
-            response.body()?.let {
-                callback?.onSuccess()
-            }
-        } else {
-            callback?.onError(HttpException(response))
+    override suspend fun getAll(): List<Post> {
+        remoteSource.getAll().let {
+            localSource.save(it)
+            return it
         }
     }
 
-    private fun proceedPostResponse(
-        response: Response<Post>,
-        callback: CompleteCallback?
-    ) {
-        if (response.isSuccessful) {
-            response.body()?.let {
-                callback?.onSuccess()
-            }
-        } else {
-            callback?.onError(HttpException(response))
+    override suspend fun likeById(id: Long): Post {
+        return localSource.likeById(id).let {
+            return@let remoteSource.likeById(id)
         }
     }
+
+    override suspend fun dislikeById(id: Long): Post {
+        return localSource.dislikeById(id).let {
+            return@let remoteSource.dislikeById(id)
+        }
+    }
+
+    override suspend fun removeById(id: Long) {
+        return localSource.removeById(id).let {
+            return@let remoteSource.removeById(id)
+        }
+    }
+
+    override suspend fun save(post: Post) {
+        localSource.save(post).apply {
+            remoteSource.save(this)
+        }
+    }
+
 }

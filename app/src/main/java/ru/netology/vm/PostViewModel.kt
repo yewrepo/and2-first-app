@@ -1,16 +1,18 @@
 package ru.netology.vm
 
 import android.app.Application
-import android.os.Handler
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.*
 import ru.netology.nmedia.Post
 import ru.netology.repository.*
-import android.os.Looper
-import retrofit2.HttpException
+import kotlinx.coroutines.launch
+import ru.netology.AppDb
+import ru.netology.datasource.RetrofitPostSourceImpl
+import ru.netology.datasource.RoomPostSourceImpl
+import ru.netology.network.ApiClient
+import ru.netology.network.AppError
 import ru.netology.nmedia.NmediaApp
 import ru.netology.nmedia.R
+import java.lang.Exception
 
 private var emptyPost = Post(
     id = 0,
@@ -29,12 +31,16 @@ class PostViewModel(
     private val defaultMessage =
         getApplication<NmediaApp>().getString(R.string.error_request_message)
 
-    var mainHandler = Handler(Looper.getMainLooper())
+    private val repository: PostDataRepository = RetrofitPostRepositoryImpl(
+        RetrofitPostSourceImpl(ApiClient.retrofitService),
+        RoomPostSourceImpl(AppDb.getInstance(app.applicationContext).postDao())
+    )
 
-    private val repository: PostAsyncRepository = RetrofitPostRepositoryImpl()
-    private val _data = MutableLiveData(FeedModel())
-    val data: LiveData<FeedModel>
-        get() = _data
+    val data = repository.data.map(::FeedModel)
+
+    private val _loadingState = MutableLiveData(LoadingState())
+    val loadingState: LiveData<LoadingState>
+        get() = _loadingState
 
     private val edited = MutableLiveData(emptyPost)
     val editPost: LiveData<Post>
@@ -49,24 +55,14 @@ class PostViewModel(
     }
 
     fun save() {
-        edited.value?.let {
-            repository.save(it, callback = object : CompleteCallback {
-                override fun onSuccess() {
-                    mainHandler.post {
-                        _postCreated.postValue(Unit)
-                        edited.value = emptyPost
-                    }
+        viewModelScope.launch {
+            edited.value?.let {
+                execute(defaultMessage, _loadingState) {
+                    repository.save(post = it)
+                    _postCreated.postValue(Unit)
+                    edited.value = emptyPost
                 }
-
-                override fun onError(e: Throwable) {
-                    _data.postValue(
-                        FeedModel(
-                            error = true,
-                            errorDescription = e.toErrorModel(defaultMessage)
-                        )
-                    )
-                }
-            })
+            }
         }
     }
 
@@ -86,99 +82,58 @@ class PostViewModel(
         }
     }
 
-    fun likeById(id: Int, liked: Boolean) {
-        if (liked) {
-            repository.dislikeById(id, completeCallback(id))
-        } else {
-            repository.likeById(id, completeCallback(id))
-        }
-    }
-
-    private fun completeCallback(id: Int) = object : CompleteCallback {
-        override fun onSuccess() {
-            _data.postValue(
-                _data.value?.copy(posts = _data.value?.posts.orEmpty().let { list ->
-                    val newList = list.toMutableList()
-                    for ((index, post) in list.withIndex()) {
-                        if (post.id == id) {
-                            newList[index] = post.copy(
-                                likedByMe = !post.likedByMe,
-                                likes = post.likes + (if (post.likedByMe) -1 else 1)
-                            )
-                        }
-                    }
-                    newList
-                })
-            )
-        }
-
-        override fun onError(e: Throwable) {
-            val old = _data.value?.posts.orEmpty()
-            _data.postValue(_data.value?.copy(posts = old))
-        }
-    }
-
-    fun shareById(id: Int) {
-        _data.postValue(
-            _data.value?.copy(posts = _data.value?.posts.orEmpty().let { list ->
-                val newList = list.toMutableList()
-                for ((index, post) in list.withIndex()) {
-                    if (post.id == id) {
-                        newList[index] = post.copy(
-                            share = post.share + 1
-                        )
-                    }
+    fun likeById(id: Long, liked: Boolean) {
+        viewModelScope.launch {
+            execute(defaultMessage, _loadingState) {
+                if (liked) {
+                    repository.likeById(id)
+                } else {
+                    repository.dislikeById(id)
                 }
-                newList
-            })
-        )
+            }
+        }
     }
 
-    fun removeById(id: Int) {
-        repository.removeById(id, object : CompleteCallback {
-            override fun onSuccess() {
-                val old = _data.value?.posts.orEmpty()
-                _data.postValue(
-                    _data.value?.copy(posts = _data.value?.posts.orEmpty().filter { it.id != id }
-                    )
-                )
-                _data.postValue(_data.value?.copy(posts = old))
+    fun removeById(id: Long) {
+        viewModelScope.launch {
+            execute(defaultMessage, _loadingState) {
+                repository.removeById(id)
             }
-
-            override fun onError(e: Throwable) {
-                _data.postValue(
-                    FeedModel(
-                        error = true,
-                        errorDescription = e.toErrorModel(defaultMessage)
-                    )
-                )
-            }
-        })
+        }
     }
 
     fun loadPosts() {
-        _data.postValue(FeedModel(loading = true))
-        repository.get(object : PostListCallback {
-            override fun onSuccess(list: List<Post>) {
-                _data.postValue(FeedModel(posts = list, loading = false))
+        viewModelScope.launch {
+            execute(defaultMessage, _loadingState) {
+                repository.getAll()
             }
-
-            override fun onError(e: Throwable) {
-                _data.postValue(
-                    FeedModel(
-                        error = true,
-                        errorDescription = e.toErrorModel(defaultMessage)
-                    )
-                )
-            }
-        })
+        }
     }
 }
 
 private fun Throwable.toErrorModel(defaultMessage: String): ErrorData {
-    return if (this is HttpException) {
-        ErrorData(this.message())
+    return if (this is AppError) {
+        ErrorData(this.code)
     } else {
         ErrorData(defaultMessage)
+    }
+}
+
+private suspend fun execute(
+    defaultMessage: String,
+    data: MutableLiveData<LoadingState>,
+    block: suspend () -> Unit
+) {
+    try {
+        data.postValue(LoadingState(isLoading = true))
+        block()
+        data.postValue(LoadingState())
+    } catch (e: Exception) {
+        data.postValue(
+            LoadingState(
+                isError = true,
+                errorDescription = e.toErrorModel(defaultMessage)
+            )
+        )
     }
 }

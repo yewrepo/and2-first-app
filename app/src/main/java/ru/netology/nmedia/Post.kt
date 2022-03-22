@@ -4,7 +4,7 @@ import android.os.Parcel
 import android.os.Parcelable
 
 data class Post(
-    val id: Int,
+    val id: Long,
     val author: String?,
     val authorAvatar: String? = null,
     val content: String?,
@@ -17,7 +17,7 @@ data class Post(
 ) : Parcelable {
 
     constructor(parcel: Parcel) : this(
-        parcel.readInt(),
+        parcel.readLong(),
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
@@ -30,7 +30,7 @@ data class Post(
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeInt(id)
+        parcel.writeLong(id)
         parcel.writeString(author)
         parcel.writeString(authorAvatar)
         parcel.writeString(content)
@@ -57,7 +57,7 @@ data class Post(
 
         @JvmStatic
         fun emptyPost() = Post(
-            id = -1,
+            id = 0,
             author = "",
             content = "",
             published = 0

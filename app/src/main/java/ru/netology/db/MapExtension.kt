@@ -2,7 +2,7 @@ package ru.netology.db
 
 import ru.netology.nmedia.Post
 
-fun PostEntity.mapPost(): Post {
+fun PostEntity.toDto(): Post {
     return Post(
         id = id,
         author = author,
@@ -15,7 +15,7 @@ fun PostEntity.mapPost(): Post {
     )
 }
 
-fun Post.toEntity(): PostEntity {
+fun Post.fromDto(): PostEntity {
     return PostEntity(
         id = id,
         author = author,
@@ -27,3 +27,6 @@ fun Post.toEntity(): PostEntity {
         youtubeLink = youtubeLink
     )
 }
+
+fun List<Post>.toEntity(): List<PostEntity> = map(Post::fromDto)
+fun List<PostEntity>.toListDto(): List<Post> = map(PostEntity::toDto)

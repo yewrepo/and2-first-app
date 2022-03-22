@@ -59,7 +59,7 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
             override fun onShareClick(position: Int) {
                 postAdapter?.apply {
-                    viewModel.shareById(this.currentList[position].id)
+                    //viewModel.shareById(this.currentList[position].id)
                 }
             }
 
@@ -90,18 +90,24 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         binding.recycler.layoutManager =
             LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
         binding.recycler.adapter = postAdapter
-        viewModel.data.observe(viewLifecycleOwner, { feedModel ->
-            postAdapter?.submitList(feedModel.posts)
-            binding.errorGroup.isVisible = feedModel.error
-            binding.emptyText.isVisible = feedModel.empty
-            binding.swiper.isRefreshing = feedModel.loading
-            feedModel.errorDescription?.apply {
+
+        viewModel.loadingState.observe(viewLifecycleOwner, { loadingState ->
+            binding.recycler.isVisible = !loadingState.isLoading && !loadingState.isError
+            binding.swiper.isRefreshing = loadingState.isLoading
+            binding.errorGroup.isVisible = loadingState.isError
+            loadingState.errorDescription?.apply {
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             }
         })
 
+        viewModel.data.observe(viewLifecycleOwner, { feedModel ->
+            postAdapter?.submitList(feedModel.posts)
+            binding.recycler.isVisible = true
+            binding.emptyText.isVisible = feedModel.empty
+        })
+
         viewModel.editPost.observe(viewLifecycleOwner, { post ->
-            if (post.id != 0) {
+            if (post.id != 0L) {
                 navigate(R.id.action_feedFragment_to_changePostFragment, post)
             }
         })

@@ -53,7 +53,7 @@ class FullscreenPostFragment : Fragment() {
             }
 
             override fun onShareClick(position: Int) {
-                viewModel.shareById(inputData.id)
+                //viewModel.shareById(inputData.id)
             }
 
             override fun onRemoveClick(position: Int) {
@@ -79,7 +79,7 @@ class FullscreenPostFragment : Fragment() {
         })
 
         viewModel.editPost.observe(viewLifecycleOwner, { post ->
-            if (post.id != 0) {
+            if (post.id != 0L) {
                 navigate(R.id.action_fullscreenPostFragment_to_changePostFragment, post)
             }
         })
