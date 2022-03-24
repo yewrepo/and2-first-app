@@ -1,7 +1,10 @@
 package ru.netology.datasource
 
-import androidx.lifecycle.LiveData
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.map
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import ru.netology.db.PostEntity
 import ru.netology.db.dao.PostDao
 import ru.netology.db.fromDto
@@ -12,7 +15,10 @@ import ru.netology.nmedia.Post
 class RoomPostSourceImpl(
     private val dao: PostDao
 ) : PostDataSource {
-    override fun get(): LiveData<List<Post>> = dao.getAll().map(List<PostEntity>::toListDto)
+    override fun get(): Flow<List<Post>> = dao.getAll()
+        .map(List<PostEntity>::toListDto)
+        .asFlow()
+        .flowOn(Dispatchers.Default)
 
     override suspend fun getAll(): List<Post> {
         return dao.getAll().value?.let { list ->

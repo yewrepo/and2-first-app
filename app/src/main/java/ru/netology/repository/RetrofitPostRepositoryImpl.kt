@@ -1,6 +1,6 @@
 package ru.netology.repository
 
-import androidx.lifecycle.LiveData
+import kotlinx.coroutines.flow.Flow
 import ru.netology.datasource.PostDataSource
 import ru.netology.nmedia.Post
 
@@ -8,7 +8,7 @@ class RetrofitPostRepositoryImpl(
     private val remoteSource: PostDataSource,
     private val localSource: PostDataSource,
 ) : PostDataRepository {
-    override val data: LiveData<List<Post>>
+    override val data: Flow<List<Post>>
         get() = localSource.get()
 
     override suspend fun getAll(): List<Post> {

@@ -2,6 +2,8 @@ package ru.netology.vm
 
 import android.app.Application
 import androidx.lifecycle.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.map
 import ru.netology.nmedia.Post
 import ru.netology.repository.*
 import kotlinx.coroutines.launch
@@ -36,7 +38,14 @@ class PostViewModel(
         RoomPostSourceImpl(AppDb.getInstance(app.applicationContext).postDao())
     )
 
-    val data = repository.data.map(::FeedModel)
+    val data = liveData(
+        viewModelScope.coroutineContext + Dispatchers.Default
+    ) {
+        repository.data
+            .map(::FeedModel).collect{
+            emit(it)
+        }
+    }
 
     private val _loadingState = MutableLiveData(LoadingState())
     val loadingState: LiveData<LoadingState>
