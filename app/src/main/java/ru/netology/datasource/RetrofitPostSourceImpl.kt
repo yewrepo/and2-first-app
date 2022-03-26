@@ -1,6 +1,5 @@
 package ru.netology.datasource
 
-import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okio.IOException
@@ -14,11 +13,20 @@ import ru.netology.nmedia.Post
 class RetrofitPostSourceImpl(
     private val api: PostAPI
 ) : PostDataSource {
+
     override fun get(): Flow<List<Post>> = flow { }
+
+    override suspend fun getNewer(id: Long): List<Post> {
+        return handleError {
+            return@handleError api
+                .getNewer(id)
+                .getOrThrow()
+        }
+    }
 
     override suspend fun getAll(): List<Post> {
         return handleError {
-            return@handleError api.getAll().getOrThrow()
+             api.getAll().getOrThrow()
         }
     }
 

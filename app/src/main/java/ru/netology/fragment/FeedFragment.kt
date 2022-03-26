@@ -22,6 +22,7 @@ import ru.netology.vm.PostViewModel
 class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
     private lateinit var binding: FragmentFeedBinding
+    private lateinit var recyclerManager: LinearLayoutManager
 
     private var postAdapter: PostAdapter? = null
     private val viewModel: PostViewModel by viewModels(
@@ -83,18 +84,23 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
             }
         })
 
+        binding.newPostsNotify.setOnClickListener {
+            viewModel.loadPosts()
+        }
+
         binding.retryButton.setOnClickListener {
             viewModel.loadPosts()
         }
         binding.swiper.setOnRefreshListener(this)
-        binding.recycler.layoutManager =
-            LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
+        recyclerManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
+        binding.recycler.layoutManager = recyclerManager
         binding.recycler.adapter = postAdapter
 
         viewModel.loadingState.observe(viewLifecycleOwner, { loadingState ->
             binding.recycler.isVisible = !loadingState.isLoading && !loadingState.isError
             binding.swiper.isRefreshing = loadingState.isLoading
             binding.errorGroup.isVisible = loadingState.isError
+            binding.newPostsNotify.isVisible = loadingState.newPostNotify
             loadingState.errorDescription?.apply {
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             }
@@ -104,6 +110,11 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
             postAdapter?.submitList(feedModel.posts)
             binding.recycler.isVisible = true
             binding.emptyText.isVisible = feedModel.empty
+            if (feedModel.empty.not()) {
+                binding.recycler.post {
+                    recyclerManager.scrollToPosition(0)
+                }
+            }
         })
 
         viewModel.editPost.observe(viewLifecycleOwner, { post ->
@@ -111,9 +122,12 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
                 navigate(R.id.action_feedFragment_to_changePostFragment, post)
             }
         })
+
         binding.addNewFab.setOnClickListener {
             navigate(R.id.action_feedFragment_to_changePostFragment)
         }
+
+        viewModel.requestUpdates()
     }
 
     override fun onResume() {

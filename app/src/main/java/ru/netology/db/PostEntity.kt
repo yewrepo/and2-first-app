@@ -14,5 +14,6 @@ data class PostEntity(
     val likes: Int = 0,
     val share: Int = 0,
     val view: Int = 0,
-    val youtubeLink: String? = null
+    val youtubeLink: String? = null,
+    val isNew: Boolean = false
 )

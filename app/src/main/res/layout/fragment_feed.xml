@@ -69,6 +69,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <TextView
+            android:id="@+id/newPostsNotify"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/rounded_corners_background"
+            android:padding="8dp"
+            android:text="Новые сообщения"
+            android:textColor="?attr/colorOnPrimary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -81,4 +93,5 @@
         app:layout_anchor="@+id/constraintLayout"
         app:layout_anchorGravity="end|bottom"
         app:srcCompat="@drawable/ic_add_post" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

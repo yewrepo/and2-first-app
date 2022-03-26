@@ -15,10 +15,15 @@ import ru.netology.nmedia.Post
 class RoomPostSourceImpl(
     private val dao: PostDao
 ) : PostDataSource {
+
     override fun get(): Flow<List<Post>> = dao.getAll()
         .map(List<PostEntity>::toListDto)
         .asFlow()
         .flowOn(Dispatchers.Default)
+
+    override suspend fun getNewer(id: Long): List<Post> {
+        return dao.getNewer().map { it.toDto() }
+    }
 
     override suspend fun getAll(): List<Post> {
         return dao.getAll().value?.let { list ->
