@@ -2,7 +2,6 @@ package ru.netology.extension
 
 import android.app.Activity
 import android.app.Application
-import android.app.Notification
 import android.content.Context
 import android.content.Intent
 import android.icu.text.CompactDecimalFormat

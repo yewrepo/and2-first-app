@@ -10,7 +10,10 @@ import ru.netology.db.PostEntity
 @Dao
 interface PostDao {
 
-    @Query("SELECT * FROM PostEntity ORDER BY id")
+    @Query("SELECT * FROM PostEntity WHERE isNew = 'true' ORDER BY id ")
+    fun getNewer(): List<PostEntity>
+
+    @Query("SELECT * FROM PostEntity ORDER BY id DESC")
     fun getAll(): LiveData<List<PostEntity>>
 
     @Query("UPDATE PostEntity SET likes = likes + CASE WHEN likedByMe THEN -1 ELSE 1 END, likedByMe = CASE WHEN  likedByMe THEN 0 ELSE 1 END WHERE id = :id")

@@ -13,7 +13,8 @@ data class Post(
     val likes: Int = 0,
     val share: Int = 0,
     val view: Int = 0,
-    val youtubeLink: String? = null
+    val youtubeLink: String? = null,
+    val isNew: Boolean
 ) : Parcelable {
 
     constructor(parcel: Parcel) : this(
@@ -26,7 +27,8 @@ data class Post(
         parcel.readInt(),
         parcel.readInt(),
         parcel.readInt(),
-        parcel.readString()
+        parcel.readString(),
+        parcel.readByte() != 0.toByte(),
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -40,6 +42,7 @@ data class Post(
         parcel.writeInt(share)
         parcel.writeInt(view)
         parcel.writeString(youtubeLink)
+        parcel.writeByte(if (isNew) 1 else 0)
     }
 
     override fun describeContents(): Int {
@@ -60,7 +63,8 @@ data class Post(
             id = 0,
             author = "",
             content = "",
-            published = 0
+            published = 0,
+            isNew = false
         )
     }
 
