@@ -11,7 +11,8 @@ fun PostEntity.toDto(): Post {
         likedByMe = likedByMe,
         likes = likes,
         share = share,
-        youtubeLink = youtubeLink
+        youtubeLink = youtubeLink,
+        isNew = isNew
     )
 }
 
@@ -24,7 +25,8 @@ fun Post.fromDto(): PostEntity {
         likedByMe = likedByMe,
         likes = likes,
         share = share,
-        youtubeLink = youtubeLink
+        youtubeLink = youtubeLink,
+        isNew = isNew
     )
 }
 

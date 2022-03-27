@@ -22,8 +22,9 @@ import ru.netology.vm.PostViewModel
 class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
     private lateinit var binding: FragmentFeedBinding
+    private lateinit var recyclerManager: LinearLayoutManager
 
-    private var postAdapter: PostAdapter? = null
+    private lateinit var postAdapter: PostAdapter
     private val viewModel: PostViewModel by viewModels(
         ownerProducer = ::requireParentFragment
     )
@@ -42,7 +43,7 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
         postAdapter = PostAdapter(object : ClickCallback {
             override fun onOpenClick(position: Int) {
-                postAdapter?.apply {
+                postAdapter.apply {
                     navigate(
                         R.id.action_feedFragment_to_fullscreenPostFragment,
                         currentList[position]
@@ -51,57 +52,67 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
             }
 
             override fun onLikeClick(position: Int) {
-                postAdapter?.apply {
+                postAdapter.apply {
                     val post = this.currentList[position]
                     viewModel.likeById(post.id, post.likedByMe)
                 }
             }
 
             override fun onShareClick(position: Int) {
-                postAdapter?.apply {
+                postAdapter.apply {
                     //viewModel.shareById(this.currentList[position].id)
                 }
             }
 
             override fun onRemoveClick(position: Int) {
-                postAdapter?.apply {
+                postAdapter.apply {
                     viewModel.removeById(this.currentList[position].id)
                 }
             }
 
             override fun onEditClick(position: Int) {
-                postAdapter?.apply {
+                postAdapter.apply {
                     val existed = this.currentList[position]
                     viewModel.edit(existed)
                 }
             }
 
             override fun onYoutubeLinkClick(position: Int) {
-                postAdapter?.apply {
+                postAdapter.apply {
                     this.currentList[position].openYoutube(requireActivity())
                 }
             }
         })
 
+        binding.newPostsNotify.setOnClickListener {
+            viewModel.loadPosts()
+        }
+
         binding.retryButton.setOnClickListener {
             viewModel.loadPosts()
         }
         binding.swiper.setOnRefreshListener(this)
-        binding.recycler.layoutManager =
-            LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
+        recyclerManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
+        binding.recycler.layoutManager = recyclerManager
         binding.recycler.adapter = postAdapter
 
         viewModel.loadingState.observe(viewLifecycleOwner, { loadingState ->
             binding.recycler.isVisible = !loadingState.isLoading && !loadingState.isError
             binding.swiper.isRefreshing = loadingState.isLoading
             binding.errorGroup.isVisible = loadingState.isError
+            binding.newPostsNotify.isVisible = loadingState.newPostNotify
             loadingState.errorDescription?.apply {
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             }
         })
 
         viewModel.data.observe(viewLifecycleOwner, { feedModel ->
-            postAdapter?.submitList(feedModel.posts)
+            val oldItemsCount = postAdapter.currentList.size
+            postAdapter.submitList(feedModel.posts) {
+                if (oldItemsCount < feedModel.posts.size) {
+                    recyclerManager.scrollToPosition(0)
+                }
+            }
             binding.recycler.isVisible = true
             binding.emptyText.isVisible = feedModel.empty
         })
@@ -111,14 +122,17 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
                 navigate(R.id.action_feedFragment_to_changePostFragment, post)
             }
         })
+
         binding.addNewFab.setOnClickListener {
             navigate(R.id.action_feedFragment_to_changePostFragment)
         }
+
+        viewModel.requestUpdates()
     }
 
     override fun onResume() {
         super.onResume()
-        postAdapter?.apply {
+        postAdapter.apply {
             if (itemCount == 0) {
                 viewModel.loadPosts()
             }
@@ -128,5 +142,4 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     override fun onRefresh() {
         viewModel.loadPosts()
     }
-
 }

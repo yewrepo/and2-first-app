@@ -2,10 +2,12 @@ package ru.netology.vm
 
 import android.app.Application
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import ru.netology.nmedia.Post
 import ru.netology.repository.*
-import kotlinx.coroutines.launch
 import ru.netology.AppDb
 import ru.netology.datasource.RetrofitPostSourceImpl
 import ru.netology.datasource.RoomPostSourceImpl
@@ -16,6 +18,7 @@ import ru.netology.nmedia.PhotoModel
 import ru.netology.nmedia.R
 import java.io.File
 import java.lang.Exception
+import kotlin.Exception
 
 private var emptyPost = Post(
     id = 0,
@@ -24,7 +27,8 @@ private var emptyPost = Post(
     published = 0,
     likes = 0,
     share = 0,
-    view = 0
+    view = 0,
+    isNew = false
 )
 
 class PostViewModel(
@@ -39,7 +43,14 @@ class PostViewModel(
         RoomPostSourceImpl(AppDb.getInstance(app.applicationContext).postDao())
     )
 
-    val data = repository.data.map(::FeedModel)
+    val data = liveData(
+        viewModelScope.coroutineContext + Dispatchers.Default
+    ) {
+        repository.data
+            .map(::FeedModel).collect {
+                emit(it)
+            }
+    }
 
     private val _loadingState = MutableLiveData(LoadingState())
     val loadingState: LiveData<LoadingState>
@@ -124,6 +135,26 @@ class PostViewModel(
             }
         }
     }
+
+    fun requestUpdates() {
+        viewModelScope.launch(Dispatchers.Main) {
+            CoroutineScope(Dispatchers.IO).launchPeriodicAsync(10_000) {
+                launch {
+                    try {
+                        val firstId = data.value?.posts?.firstOrNull()?.id ?: 0L
+                        val count = repository.getNewerCount(firstId).single()
+                        if (count > 0) {
+                            _loadingState.value?.apply {
+                                _loadingState.postValue(copy(newPostNotify = true))
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Log.e("PostViewModel", "error: $e")
+                    }
+                }
+            }.join()
+        }
+    }
 }
 
 private fun Throwable.toErrorModel(defaultMessage: String): ErrorData {
@@ -150,5 +181,19 @@ private suspend fun execute(
                 errorDescription = e.toErrorModel(defaultMessage)
             )
         )
+    }
+}
+
+fun CoroutineScope.launchPeriodicAsync(
+    repeatMillis: Long,
+    action: () -> Unit
+) = this.launch {
+    if (repeatMillis > 0) {
+        while (isActive) {
+            action()
+            delay(repeatMillis)
+        }
+    } else {
+        action()
     }
 }
