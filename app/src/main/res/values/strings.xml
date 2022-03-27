@@ -26,4 +26,6 @@
     <string name="empty_posts">No posts</string>
     <string name="error_text">Error has occurred</string>
     <string name="error_request_message">Request failed</string>
+    <string name="action_select_photo">Select photo</string>
+    <string name="action_take_photo">Make photo</string>
 </resources>

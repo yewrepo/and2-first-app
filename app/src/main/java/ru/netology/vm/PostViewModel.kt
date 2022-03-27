@@ -1,6 +1,7 @@
 package ru.netology.vm
 
 import android.app.Application
+import android.net.Uri
 import androidx.lifecycle.*
 import ru.netology.nmedia.Post
 import ru.netology.repository.*
@@ -11,7 +12,9 @@ import ru.netology.datasource.RoomPostSourceImpl
 import ru.netology.network.ApiClient
 import ru.netology.network.AppError
 import ru.netology.nmedia.NmediaApp
+import ru.netology.nmedia.PhotoModel
 import ru.netology.nmedia.R
+import java.io.File
 import java.lang.Exception
 
 private var emptyPost = Post(
@@ -68,6 +71,18 @@ class PostViewModel(
 
     fun cancel() {
         edited.value = emptyPost
+    }
+
+    fun removePhoto() {
+        edited.value?.let { post ->
+            edited.postValue(post.copy(photoModel = null))
+        }
+    }
+
+    fun changePhoto(uri: Uri?, file: File?) {
+        edited.value?.let { post ->
+            edited.postValue(post.copy(photoModel = PhotoModel(uri, file)))
+        }
     }
 
     fun changeContent(content: String, youtubeLink: String?) {
