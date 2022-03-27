@@ -24,7 +24,7 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     private lateinit var binding: FragmentFeedBinding
     private lateinit var recyclerManager: LinearLayoutManager
 
-    private var postAdapter: PostAdapter? = null
+    private lateinit var postAdapter: PostAdapter
     private val viewModel: PostViewModel by viewModels(
         ownerProducer = ::requireParentFragment
     )
@@ -43,7 +43,7 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
         postAdapter = PostAdapter(object : ClickCallback {
             override fun onOpenClick(position: Int) {
-                postAdapter?.apply {
+                postAdapter.apply {
                     navigate(
                         R.id.action_feedFragment_to_fullscreenPostFragment,
                         currentList[position]
@@ -52,33 +52,33 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
             }
 
             override fun onLikeClick(position: Int) {
-                postAdapter?.apply {
+                postAdapter.apply {
                     val post = this.currentList[position]
                     viewModel.likeById(post.id, post.likedByMe)
                 }
             }
 
             override fun onShareClick(position: Int) {
-                postAdapter?.apply {
+                postAdapter.apply {
                     //viewModel.shareById(this.currentList[position].id)
                 }
             }
 
             override fun onRemoveClick(position: Int) {
-                postAdapter?.apply {
+                postAdapter.apply {
                     viewModel.removeById(this.currentList[position].id)
                 }
             }
 
             override fun onEditClick(position: Int) {
-                postAdapter?.apply {
+                postAdapter.apply {
                     val existed = this.currentList[position]
                     viewModel.edit(existed)
                 }
             }
 
             override fun onYoutubeLinkClick(position: Int) {
-                postAdapter?.apply {
+                postAdapter.apply {
                     this.currentList[position].openYoutube(requireActivity())
                 }
             }
@@ -107,14 +107,14 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         })
 
         viewModel.data.observe(viewLifecycleOwner, { feedModel ->
-            postAdapter?.submitList(feedModel.posts)
-            binding.recycler.isVisible = true
-            binding.emptyText.isVisible = feedModel.empty
-            if (feedModel.empty.not()) {
-                binding.recycler.post {
+            val oldItemsCount = postAdapter.currentList.size
+            postAdapter.submitList(feedModel.posts) {
+                if (oldItemsCount < feedModel.posts.size) {
                     recyclerManager.scrollToPosition(0)
                 }
             }
+            binding.recycler.isVisible = true
+            binding.emptyText.isVisible = feedModel.empty
         })
 
         viewModel.editPost.observe(viewLifecycleOwner, { post ->
@@ -132,7 +132,7 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onResume() {
         super.onResume()
-        postAdapter?.apply {
+        postAdapter.apply {
             if (itemCount == 0) {
                 viewModel.loadPosts()
             }
@@ -142,5 +142,4 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     override fun onRefresh() {
         viewModel.loadPosts()
     }
-
 }

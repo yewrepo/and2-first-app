@@ -1,6 +1,7 @@
 package ru.netology.vm
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -13,7 +14,7 @@ import ru.netology.network.ApiClient
 import ru.netology.network.AppError
 import ru.netology.nmedia.NmediaApp
 import ru.netology.nmedia.R
-import java.lang.Exception
+import kotlin.Exception
 
 private var emptyPost = Post(
     id = 0,
@@ -123,12 +124,16 @@ class PostViewModel(
         viewModelScope.launch(Dispatchers.Main) {
             CoroutineScope(Dispatchers.IO).launchPeriodicAsync(10_000) {
                 launch {
-                    val firstId = data.value?.posts?.firstOrNull()?.id ?: 0L
-                    val count = repository.getNewerCount(firstId).single()
-                    if (count > 0) {
-                        _loadingState.value?.apply {
-                            _loadingState.postValue(copy(newPostNotify = true))
+                    try {
+                        val firstId = data.value?.posts?.firstOrNull()?.id ?: 0L
+                        val count = repository.getNewerCount(firstId).single()
+                        if (count > 0) {
+                            _loadingState.value?.apply {
+                                _loadingState.postValue(copy(newPostNotify = true))
+                            }
                         }
+                    } catch (e: Exception) {
+                        Log.e("PostViewModel", "error: $e")
                     }
                 }
             }.join()

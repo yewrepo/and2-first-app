@@ -26,7 +26,7 @@ class RetrofitPostSourceImpl(
 
     override suspend fun getAll(): List<Post> {
         return handleError {
-             api.getAll().getOrThrow()
+            return@handleError api.getAll().getOrThrow()
         }
     }
 
