@@ -2,13 +2,12 @@ package ru.netology.datasource
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import okio.IOException
 import retrofit2.Response
-import ru.netology.network.ApiError
-import ru.netology.network.NetworkError
-import ru.netology.network.PostAPI
-import ru.netology.network.UnknownError
-import ru.netology.nmedia.Post
+import ru.netology.network.*
+import ru.netology.nmedia.*
 
 class RetrofitPostSourceImpl(
     private val api: PostAPI
@@ -56,6 +55,38 @@ class RetrofitPostSourceImpl(
 
     override suspend fun save(post: List<Post>): List<Post> {
         throw IllegalStateException("Not use here")
+    }
+
+    override suspend fun saveWithAttachment(post: Post, upload: MediaUpload): Post {
+        try {
+            val media = upload(upload)
+            val postWithAttachment =
+                post.copy(attachment = Attachment(url = media.id, "", AttachmentType.IMAGE))
+            return save(postWithAttachment)
+        } catch (e: AppError) {
+            throw e
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
+    }
+
+    override suspend fun upload(upload: MediaUpload): Media {
+        try {
+            val media = MultipartBody.Part.createFormData(
+                "file", upload.file.name, upload.file.asRequestBody()
+            )
+            val response = api.upload(media)
+            if (!response.isSuccessful) {
+                throw ApiError(response.code(), response.message())
+            }
+            return response.body() ?: throw ApiError(response.code(), response.message())
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
     }
 
     private suspend fun <T> handleError(block: suspend () -> T): T {

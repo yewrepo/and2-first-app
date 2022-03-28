@@ -79,6 +79,13 @@
             app:layout_constraintTop_toBottomOf="@id/barrier">
 
             <ImageView
+                android:id="@+id/post_image"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_youtube_icon" />
+
+            <ImageView
                 android:id="@+id/youtube_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

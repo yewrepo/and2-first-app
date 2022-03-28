@@ -3,7 +3,6 @@ package ru.netology.fragment
 import android.app.Activity
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +12,6 @@ import androidx.core.net.toFile
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.github.dhaval2404.imagepicker.ImagePicker
@@ -29,6 +27,7 @@ import ru.netology.vm.PostViewModel
 
 class ChangePostFragment : Fragment() {
 
+    private lateinit var post: Post
     private lateinit var binding: FragmentChangePostBinding
 
     private val viewModel: PostViewModel by viewModels(
@@ -51,6 +50,11 @@ class ChangePostFragment : Fragment() {
                 }
             }
         }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        post = arguments!!.postData!!
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -106,14 +110,9 @@ class ChangePostFragment : Fragment() {
             viewModel.removePhoto()
         }
         binding.photoLayoutPreview.setOnClickListener {
-            val extras =
-                FragmentNavigatorExtras(binding.photoLayoutPreview to "photo_layout_preview")
-
-            findNavController().navigate(
+            navigate(
                 R.id.action_changePostFragment_to_fullscreenImageFragment,
-                null,
-                null,
-                extras
+                post = post
             )
         }
 

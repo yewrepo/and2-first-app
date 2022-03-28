@@ -17,7 +17,6 @@ import ru.netology.nmedia.NmediaApp
 import ru.netology.nmedia.PhotoModel
 import ru.netology.nmedia.R
 import java.io.File
-import java.lang.Exception
 import kotlin.Exception
 
 private var emptyPost = Post(
@@ -86,7 +85,7 @@ class PostViewModel(
 
     fun removePhoto() {
         edited.value?.let { post ->
-            edited.postValue(post.copy(photoModel = null))
+            edited.postValue(post.copy(attachment = null))
         }
     }
 
@@ -138,7 +137,7 @@ class PostViewModel(
 
     fun requestUpdates() {
         viewModelScope.launch(Dispatchers.Main) {
-            CoroutineScope(Dispatchers.IO).launchPeriodicAsync(10_000) {
+            CoroutineScope(Dispatchers.IO).launchPeriodicAsync(20_000) {
                 launch {
                     try {
                         val firstId = data.value?.posts?.firstOrNull()?.id ?: 0L

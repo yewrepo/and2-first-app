@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_feedFragment_to_fullscreenPostFragment"
             app:destination="@id/fullscreenPostFragment" />
+        <action
+            android:id="@+id/action_feedFragment_to_fullscreenImageFragment"
+            app:destination="@id/fullscreenImageFragment" />
     </fragment>
     <fragment
         android:id="@+id/changePostFragment"
@@ -35,6 +38,9 @@
         <action
             android:id="@+id/action_fullscreenPostFragment_to_changePostFragment"
             app:destination="@id/changePostFragment" />
+        <action
+            android:id="@+id/action_fullscreenPostFragment_to_fullscreenImageFragment"
+            app:destination="@id/fullscreenImageFragment" />
     </fragment>
     <fragment
         android:id="@+id/fullscreenImageFragment"

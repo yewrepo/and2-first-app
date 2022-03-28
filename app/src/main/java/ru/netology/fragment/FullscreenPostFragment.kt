@@ -67,6 +67,12 @@ class FullscreenPostFragment : Fragment() {
             override fun onYoutubeLinkClick(position: Int) {
                 inputData.openYoutube(requireActivity())
             }
+
+            override fun onPhotoOpenClick(position: Int) {
+                navigate(
+                    R.id.action_fullscreenPostFragment_to_fullscreenImageFragment,
+                    post = inputData)
+            }
         })
         postHolder.bind(inputData)
         viewModel.data.observe(viewLifecycleOwner, { feedModel ->

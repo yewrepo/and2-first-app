@@ -7,8 +7,7 @@
         android:id="@+id/photo_layout_preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center_horizontal"
-        android:transitionName="photo_preview" />
+        android:layout_gravity="center_horizontal" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/remove_photo"

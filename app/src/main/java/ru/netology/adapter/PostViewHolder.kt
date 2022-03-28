@@ -4,10 +4,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import ru.netology.extension.getContext
+import ru.netology.extension.getRemoteAvatarRoute
+import ru.netology.extension.getRemoteMediaRoute
 import ru.netology.extension.shortFormat
+import ru.netology.nmedia.Attachment
 import ru.netology.nmedia.Post
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
@@ -22,6 +26,9 @@ class PostViewHolder(
     init {
         binding.root.setOnClickListener {
             callback.onOpenClick(bindingAdapterPosition)
+        }
+        binding.postImage.setOnClickListener {
+            callback.onPhotoOpenClick(bindingAdapterPosition)
         }
         binding.youtubeButton.setOnClickListener {
             callback.onYoutubeLinkClick(bindingAdapterPosition)
@@ -55,6 +62,7 @@ class PostViewHolder(
     fun bind(post: Post?) {
         post?.apply {
             loadAvatar(post)
+            loadImage(post)
             setViews(post)
             setShare(post)
             setLikes(post)
@@ -67,9 +75,20 @@ class PostViewHolder(
         }
     }
 
+    private fun loadImage(post: Post) {
+        binding.postImage.isVisible = post.attachment != null
+        post.attachment?.apply {
+            Glide.with(getContext())
+                .load(getRemoteMediaRoute())
+                .timeout(10_000)
+                .fitCenter()
+                .into(binding.postImage)
+        }
+    }
+
     private fun loadAvatar(post: Post) {
         Glide.with(getContext())
-            .load("${NetworkPostRepositoryImpl.BASE_URL}/avatars/${post.authorAvatar}")
+            .load(post.getRemoteAvatarRoute())
             .timeout(10_000)
             .placeholder(R.drawable.ic_broken_image_24dp)
             .centerCrop()
