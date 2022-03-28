@@ -27,4 +27,6 @@
     <string name="empty_posts">Нет постов</string>
     <string name="error_text">Ошибка</string>
     <string name="error_request_message">Ошибка запроса</string>
+    <string name="action_select_photo">Выбрать фото</string>
+    <string name="action_take_photo">Сделать фото</string>
 </resources>
