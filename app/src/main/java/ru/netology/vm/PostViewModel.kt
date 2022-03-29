@@ -1,6 +1,7 @@
 package ru.netology.vm
 
 import android.app.Application
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.*
 import kotlinx.coroutines.*
@@ -13,7 +14,9 @@ import ru.netology.datasource.RoomPostSourceImpl
 import ru.netology.network.ApiClient
 import ru.netology.network.AppError
 import ru.netology.nmedia.NmediaApp
+import ru.netology.nmedia.PhotoModel
 import ru.netology.nmedia.R
+import java.io.File
 import kotlin.Exception
 
 private var emptyPost = Post(
@@ -80,6 +83,18 @@ class PostViewModel(
         edited.value = emptyPost
     }
 
+    fun removePhoto() {
+        edited.value?.let { post ->
+            edited.postValue(post.copy(attachment = null))
+        }
+    }
+
+    fun changePhoto(uri: Uri?, file: File?) {
+        edited.value?.let { post ->
+            edited.postValue(post.copy(photoModel = PhotoModel(uri, file)))
+        }
+    }
+
     fun changeContent(content: String, youtubeLink: String?) {
         edited.value?.let { post ->
             val text = content.trim()
@@ -122,7 +137,7 @@ class PostViewModel(
 
     fun requestUpdates() {
         viewModelScope.launch(Dispatchers.Main) {
-            CoroutineScope(Dispatchers.IO).launchPeriodicAsync(10_000) {
+            CoroutineScope(Dispatchers.IO).launchPeriodicAsync(20_000) {
                 launch {
                     try {
                         val firstId = data.value?.posts?.firstOrNull()?.id ?: 0L

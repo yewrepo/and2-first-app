@@ -14,7 +14,9 @@ data class Post(
     val share: Int = 0,
     val view: Int = 0,
     val youtubeLink: String? = null,
-    val isNew: Boolean
+    val isNew: Boolean,
+    val photoModel: PhotoModel? = null,
+    val attachment: Attachment? = null,
 ) : Parcelable {
 
     constructor(parcel: Parcel) : this(
@@ -29,6 +31,8 @@ data class Post(
         parcel.readInt(),
         parcel.readString(),
         parcel.readByte() != 0.toByte(),
+        parcel.readParcelable(PhotoModel::class.java.classLoader),
+        parcel.readParcelable(Attachment::class.java.classLoader)
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -43,6 +47,8 @@ data class Post(
         parcel.writeInt(view)
         parcel.writeString(youtubeLink)
         parcel.writeByte(if (isNew) 1 else 0)
+        parcel.writeParcelable(photoModel, flags)
+        parcel.writeParcelable(attachment, flags)
     }
 
     override fun describeContents(): Int {
@@ -67,5 +73,4 @@ data class Post(
             isNew = false
         )
     }
-
 }

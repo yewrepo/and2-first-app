@@ -1,6 +1,8 @@
 package ru.netology.datasource
 
 import kotlinx.coroutines.flow.Flow
+import ru.netology.nmedia.Media
+import ru.netology.nmedia.MediaUpload
 import ru.netology.nmedia.Post
 
 interface PostDataSource {
@@ -12,4 +14,7 @@ interface PostDataSource {
     suspend fun removeById(id: Long)
     suspend fun save(post: Post): Post
     suspend fun save(post: List<Post>): List<Post>
+
+    suspend fun saveWithAttachment(post: Post, upload: MediaUpload): Post
+    suspend fun upload(upload: MediaUpload): Media
 }

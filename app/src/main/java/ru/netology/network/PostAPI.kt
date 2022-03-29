@@ -1,7 +1,9 @@
 package ru.netology.network
 
+import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.*
+import ru.netology.nmedia.Media
 import ru.netology.nmedia.Post
 
 interface PostAPI {
@@ -17,6 +19,10 @@ interface PostAPI {
 
     @POST("posts")
     suspend fun save(@Body post: Post): Response<Post>
+
+    @Multipart
+    @POST("media")
+    suspend fun upload(@Part media: MultipartBody.Part): Response<Media>
 
     @POST("posts/{id}/likes")
     suspend fun likeById(@Path("id") id: Long): Response<Post>

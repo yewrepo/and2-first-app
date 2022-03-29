@@ -7,4 +7,5 @@ interface ClickCallback {
     fun onRemoveClick(position: Int)
     fun onEditClick(position: Int)
     fun onYoutubeLinkClick(position: Int)
+    fun onPhotoOpenClick(position: Int)
 }

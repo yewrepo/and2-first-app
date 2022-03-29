@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import ru.netology.datasource.PostDataSource
+import ru.netology.nmedia.MediaUpload
 import ru.netology.nmedia.Post
 
 class RetrofitPostRepositoryImpl(
@@ -53,8 +54,14 @@ class RetrofitPostRepositoryImpl(
     }
 
     override suspend fun save(post: Post) {
-        localSource.save(post).apply {
-            remoteSource.save(this)
+        if (post.photoModel == null) {
+            localSource.save(post).apply {
+                remoteSource.save(this)
+            }
+        } else {
+            remoteSource.saveWithAttachment(post, MediaUpload(post.photoModel.file!!)).apply {
+                localSource.save(this)
+            }
         }
     }
 

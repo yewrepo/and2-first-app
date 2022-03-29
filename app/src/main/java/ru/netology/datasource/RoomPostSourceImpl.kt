@@ -10,6 +10,8 @@ import ru.netology.db.dao.PostDao
 import ru.netology.db.fromDto
 import ru.netology.db.toDto
 import ru.netology.db.toListDto
+import ru.netology.nmedia.Media
+import ru.netology.nmedia.MediaUpload
 import ru.netology.nmedia.Post
 
 class RoomPostSourceImpl(
@@ -51,5 +53,13 @@ class RoomPostSourceImpl(
     override suspend fun save(post: List<Post>): List<Post> {
         dao.insert(post.map(Post::fromDto))
         return dao.getAll().value?.map { it.toDto() } ?: emptyList()
+    }
+
+    override suspend fun saveWithAttachment(post: Post, upload: MediaUpload): Post {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun upload(upload: MediaUpload): Media {
+        TODO("Not yet implemented")
     }
 }

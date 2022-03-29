@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -80,6 +81,15 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
             override fun onYoutubeLinkClick(position: Int) {
                 postAdapter.apply {
                     this.currentList[position].openYoutube(requireActivity())
+                }
+            }
+
+            override fun onPhotoOpenClick(position: Int) {
+                postAdapter.apply {
+                    navigate(
+                        R.id.action_feedFragment_to_fullscreenImageFragment,
+                        post = this.currentList[position]
+                    )
                 }
             }
         })

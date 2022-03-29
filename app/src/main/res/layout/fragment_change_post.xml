@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -54,6 +55,79 @@
             android:padding="@dimen/default_spacing" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/preview_card"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:visibility="gone"
+        app:cardElevation="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_layout_video"
+        app:strokeColor="?attr/colorOnBackground"
+        app:strokeWidth="1dp"
+        tools:visibility="visible">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/photo_layout_preview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:transitionName="photo_preview"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/remove_photo"
+                style="@style/Widget.AppTheme.SimpleButton.OnlyIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:icon="@drawable/ic_baseline_close_24"
+                app:iconTint="?attr/colorPrimary"
+                app:layout_constraintEnd_toEndOf="@+id/photo_layout_preview"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <LinearLayout
+        android:id="@+id/photo_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/preview_card">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/take_photo"
+            style="@style/Widget.AppTheme.SimpleButton.OnlyIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_take_picture"
+            app:iconTint="?attr/colorPrimary" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/select_photo"
+            style="@style/Widget.AppTheme.SimpleButton.OnlyIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_select_photo"
+            app:iconTint="?attr/colorPrimary" />
+
+    </LinearLayout>
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/save"
         style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
@@ -63,7 +137,7 @@
         android:layout_marginTop="8dp"
         android:text="@string/action_save"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_layout_video" />
+        app:layout_constraintTop_toBottomOf="@+id/photo_layout" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/cancel"
@@ -74,5 +148,5 @@
         android:layout_marginEnd="16dp"
         android:text="@string/action_cancel"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_layout_video" />
+        app:layout_constraintTop_toBottomOf="@+id/photo_layout" />
 </androidx.constraintlayout.widget.ConstraintLayout>

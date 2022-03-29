@@ -15,9 +15,11 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import ru.netology.fragment.ChangePostFragment.Companion.postData
+import ru.netology.nmedia.Attachment
 import ru.netology.nmedia.Post
 import ru.netology.nmedia.R
 import ru.netology.notification.Notifications
+import ru.netology.repository.NetworkPostRepositoryImpl
 import java.util.*
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -95,3 +97,11 @@ fun Application.initChannels() {
 }
 
 fun RecyclerView.ViewHolder.getContext() = itemView.context
+
+fun Attachment.getRemoteMediaRoute(): String {
+    return "${NetworkPostRepositoryImpl.BASE_URL}/media/${url}"
+}
+
+fun Post.getRemoteAvatarRoute(): String {
+    return "${NetworkPostRepositoryImpl.BASE_URL}/avatars/${authorAvatar}"
+}
