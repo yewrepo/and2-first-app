@@ -29,4 +29,12 @@
     <string name="error_request_message">Ошибка запроса</string>
     <string name="action_select_photo">Выбрать фото</string>
     <string name="action_take_photo">Сделать фото</string>
+    <string name="sign_in">Войти</string>
+    <string name="sign_up">Зарегистрироваться</string>
+    <string name="sign_out">Выйти</string>
+    <string name="login">Логин</string>
+    <string name="password">Пароль</string>
+    <string name="action_sign_in">Войти</string>
+    <string name="name">Имя</string>
+    <string name="sign_in_explanation">Войдите в аккаунт</string>
 </resources>

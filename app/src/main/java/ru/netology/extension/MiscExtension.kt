@@ -14,7 +14,10 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import retrofit2.Response
+import ru.netology.AppAuth
 import ru.netology.fragment.ChangePostFragment.Companion.postData
+import ru.netology.network.ApiError
 import ru.netology.nmedia.Attachment
 import ru.netology.nmedia.Post
 import ru.netology.nmedia.R
@@ -78,7 +81,7 @@ fun Post?.openYoutube(activity: Activity) {
 
 fun Fragment.navigate(id: Int, post: Post? = null) {
     findNavController().navigate(id, Bundle().apply {
-        postData = post ?: Post.emptyPost()
+        postData = post ?: getEmptyPost()
     })
 }
 
@@ -104,4 +107,31 @@ fun Attachment.getRemoteMediaRoute(): String {
 
 fun Post.getRemoteAvatarRoute(): String {
     return "${NetworkPostRepositoryImpl.BASE_URL}/avatars/${authorAvatar}"
+}
+
+fun <T> Response<T>.getOrThrow(): T {
+    if (isSuccessful.not()) {
+        throw ApiError(code(), message())
+    }
+    return body() ?: throw ApiError(
+        code(),
+        message()
+    )
+}
+
+fun getEmptyPost(): Post {
+    AppAuth.getInstance().authStateFlow.value.apply {
+        return Post(
+            id = 0,
+            author = "Me",
+            authorId = id,
+            content = "",
+            published = 0,
+            likes = 0,
+            share = 0,
+            view = 0,
+            isNew = false,
+            ownedByMe = false
+        )
+    }
 }

@@ -6,6 +6,7 @@ import android.os.Parcelable
 data class Post(
     val id: Long,
     val author: String?,
+    val authorId: Long,
     val authorAvatar: String? = null,
     val content: String?,
     val published: Long,
@@ -15,6 +16,7 @@ data class Post(
     val view: Int = 0,
     val youtubeLink: String? = null,
     val isNew: Boolean,
+    val ownedByMe: Boolean,
     val photoModel: PhotoModel? = null,
     val attachment: Attachment? = null,
 ) : Parcelable {
@@ -22,6 +24,7 @@ data class Post(
     constructor(parcel: Parcel) : this(
         parcel.readLong(),
         parcel.readString(),
+        parcel.readLong(),
         parcel.readString(),
         parcel.readString(),
         parcel.readLong(),
@@ -30,6 +33,7 @@ data class Post(
         parcel.readInt(),
         parcel.readInt(),
         parcel.readString(),
+        parcel.readByte() != 0.toByte(),
         parcel.readByte() != 0.toByte(),
         parcel.readParcelable(PhotoModel::class.java.classLoader),
         parcel.readParcelable(Attachment::class.java.classLoader)
@@ -38,6 +42,7 @@ data class Post(
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeLong(id)
         parcel.writeString(author)
+        parcel.writeLong(authorId)
         parcel.writeString(authorAvatar)
         parcel.writeString(content)
         parcel.writeLong(published)
@@ -47,6 +52,7 @@ data class Post(
         parcel.writeInt(view)
         parcel.writeString(youtubeLink)
         parcel.writeByte(if (isNew) 1 else 0)
+        parcel.writeByte(if (ownedByMe) 1 else 0)
         parcel.writeParcelable(photoModel, flags)
         parcel.writeParcelable(attachment, flags)
     }
@@ -63,14 +69,5 @@ data class Post(
         override fun newArray(size: Int): Array<Post?> {
             return arrayOfNulls(size)
         }
-
-        @JvmStatic
-        fun emptyPost() = Post(
-            id = 0,
-            author = "",
-            content = "",
-            published = 0,
-            isNew = false
-        )
     }
 }

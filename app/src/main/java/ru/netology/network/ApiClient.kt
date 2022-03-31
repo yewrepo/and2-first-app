@@ -12,6 +12,7 @@ object ApiClient {
     private val client = OkHttpClient.Builder()
         .connectTimeout(10, TimeUnit.SECONDS)
         .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+        .addNetworkInterceptor(AuthInterceptor())
         .build()
 
     private val retrofit = Retrofit.Builder()
@@ -20,7 +21,11 @@ object ApiClient {
         .client(client)
         .build()
 
-    val retrofitService: PostAPI by lazy {
+    val postsService: PostAPI by lazy {
         retrofit.create(PostAPI::class.java)
+    }
+
+    val userService: UserAPI by lazy {
+        retrofit.create(UserAPI::class.java)
     }
 }

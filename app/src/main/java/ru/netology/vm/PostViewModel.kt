@@ -6,11 +6,13 @@ import android.util.Log
 import androidx.lifecycle.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import ru.netology.AppAuth
 import ru.netology.nmedia.Post
 import ru.netology.repository.*
 import ru.netology.AppDb
 import ru.netology.datasource.RetrofitPostSourceImpl
 import ru.netology.datasource.RoomPostSourceImpl
+import ru.netology.extension.getEmptyPost
 import ru.netology.network.ApiClient
 import ru.netology.network.AppError
 import ru.netology.nmedia.NmediaApp
@@ -19,16 +21,6 @@ import ru.netology.nmedia.R
 import java.io.File
 import kotlin.Exception
 
-private var emptyPost = Post(
-    id = 0,
-    author = "Me",
-    content = "",
-    published = 0,
-    likes = 0,
-    share = 0,
-    view = 0,
-    isNew = false
-)
 
 class PostViewModel(
     app: Application,
@@ -38,24 +30,27 @@ class PostViewModel(
         getApplication<NmediaApp>().getString(R.string.error_request_message)
 
     private val repository: PostDataRepository = RetrofitPostRepositoryImpl(
-        RetrofitPostSourceImpl(ApiClient.retrofitService),
+        RetrofitPostSourceImpl(ApiClient.postsService),
         RoomPostSourceImpl(AppDb.getInstance(app.applicationContext).postDao())
     )
 
-    val data = liveData(
-        viewModelScope.coroutineContext + Dispatchers.Default
-    ) {
-        repository.data
-            .map(::FeedModel).collect {
-                emit(it)
-            }
-    }
+    val data: LiveData<FeedModel> = AppAuth.getInstance()
+        .authStateFlow
+        .flatMapLatest { (myId, _) ->
+            repository.data
+                .map { posts ->
+                    FeedModel(
+                        posts.map { it.copy(ownedByMe = it.authorId == myId && myId > 0) },
+                        posts.isEmpty()
+                    )
+                }
+        }.asLiveData(Dispatchers.Default)
 
     private val _loadingState = MutableLiveData(LoadingState())
     val loadingState: LiveData<LoadingState>
         get() = _loadingState
 
-    private val edited = MutableLiveData(emptyPost)
+    private val edited = MutableLiveData(getEmptyPost())
     val editPost: LiveData<Post>
         get() = edited
 
@@ -73,14 +68,14 @@ class PostViewModel(
                 execute(defaultMessage, _loadingState) {
                     repository.save(post = it)
                     _postCreated.postValue(Unit)
-                    edited.value = emptyPost
+                    edited.value = getEmptyPost()
                 }
             }
         }
     }
 
     fun cancel() {
-        edited.value = emptyPost
+        edited.value = getEmptyPost()
     }
 
     fun removePhoto() {

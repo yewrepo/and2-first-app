@@ -9,6 +9,7 @@ data class PostEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long,
     val author: String?,
+    val authorId: Long,
     val authorAvatar: String?,
     val content: String?,
     val published: Long,
@@ -18,6 +19,7 @@ data class PostEntity(
     val view: Int = 0,
     val youtubeLink: String? = null,
     val isNew: Boolean = false,
+    val ownedByMe: Boolean,
     @Embedded
     var attachment: AttachmentLocal?,
 )

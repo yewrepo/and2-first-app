@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.flow
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okio.IOException
-import retrofit2.Response
+import ru.netology.extension.getOrThrow
 import ru.netology.network.*
 import ru.netology.nmedia.*
 
@@ -99,13 +99,4 @@ class RetrofitPostSourceImpl(
         }
     }
 
-    private fun <T> Response<T>.getOrThrow(): T {
-        if (isSuccessful.not()) {
-            throw ApiError(code(), message())
-        }
-        return body() ?: throw ApiError(
-            code(),
-            message()
-        )
-    }
 }

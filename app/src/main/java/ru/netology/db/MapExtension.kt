@@ -7,6 +7,7 @@ fun PostEntity.toDto(): Post {
     return Post(
         id = id,
         author = author,
+        authorId = authorId,
         authorAvatar = authorAvatar,
         content = content,
         published = published,
@@ -15,6 +16,7 @@ fun PostEntity.toDto(): Post {
         share = share,
         youtubeLink = youtubeLink,
         isNew = isNew,
+        ownedByMe = ownedByMe,
         attachment = attachment.toDto()
     )
 }
@@ -23,6 +25,7 @@ fun Post.fromDto(): PostEntity {
     return PostEntity(
         id = id,
         author = author,
+        authorId = authorId,
         authorAvatar = authorAvatar,
         content = content,
         published = published,
@@ -31,6 +34,7 @@ fun Post.fromDto(): PostEntity {
         share = share,
         youtubeLink = youtubeLink,
         isNew = isNew,
+        ownedByMe = ownedByMe,
         attachment = attachment.fromDto()
     )
 }

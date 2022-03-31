@@ -11,11 +11,9 @@ import ru.netology.extension.getContext
 import ru.netology.extension.getRemoteAvatarRoute
 import ru.netology.extension.getRemoteMediaRoute
 import ru.netology.extension.shortFormat
-import ru.netology.nmedia.Attachment
 import ru.netology.nmedia.Post
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
-import ru.netology.repository.NetworkPostRepositoryImpl
 import java.util.*
 
 class PostViewHolder(
@@ -71,6 +69,7 @@ class PostViewHolder(
                 author.text = post.author
                 content.text = post.content
                 published.text = post.published.toString()
+                menu.isVisible = post.ownedByMe
             }
         }
     }

@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -18,6 +18,7 @@ import ru.netology.extension.navigate
 import ru.netology.extension.openYoutube
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentFeedBinding
+import ru.netology.vm.AuthViewModel
 import ru.netology.vm.PostViewModel
 
 class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
@@ -26,6 +27,8 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     private lateinit var recyclerManager: LinearLayoutManager
 
     private lateinit var postAdapter: PostAdapter
+
+    private val authViewModel: AuthViewModel by activityViewModels()
     private val viewModel: PostViewModel by viewModels(
         ownerProducer = ::requireParentFragment
     )
@@ -106,6 +109,12 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         binding.recycler.layoutManager = recyclerManager
         binding.recycler.adapter = postAdapter
 
+        authViewModel.data.observe(viewLifecycleOwner, { authState ->
+            if (authState.id > 0) {
+                viewModel.loadPosts()
+            }
+        })
+
         viewModel.loadingState.observe(viewLifecycleOwner, { loadingState ->
             binding.recycler.isVisible = !loadingState.isLoading && !loadingState.isError
             binding.swiper.isRefreshing = loadingState.isLoading
@@ -134,7 +143,11 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         })
 
         binding.addNewFab.setOnClickListener {
-            navigate(R.id.action_feedFragment_to_changePostFragment)
+            if (authViewModel.authenticated) {
+                navigate(R.id.action_feedFragment_to_changePostFragment)
+            } else {
+                navigate(R.id.action_feedFragment_to_authFragment)
+            }
         }
 
         viewModel.requestUpdates()
