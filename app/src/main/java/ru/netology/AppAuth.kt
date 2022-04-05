@@ -1,12 +1,20 @@
 package ru.netology
 
 import android.content.Context
+import android.util.Log
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.ktx.messaging
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import ru.netology.network.ApiClient
+import ru.netology.nmedia.PushToken
 
 class AppAuth private constructor(context: Context) {
-
+    private val tag = AppAuth::class.java.simpleName
     private val prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE)
     private val idKey = "id"
     private val tokenKey = "token"
@@ -26,6 +34,8 @@ class AppAuth private constructor(context: Context) {
         } else {
             _authStateFlow = MutableStateFlow(AuthState(id, token))
         }
+
+        sendPushToken()
     }
 
     val authStateFlow: StateFlow<AuthState> = _authStateFlow.asStateFlow()
@@ -38,6 +48,7 @@ class AppAuth private constructor(context: Context) {
             putString(tokenKey, token)
             apply()
         }
+        sendPushToken()
     }
 
     @Synchronized
@@ -45,7 +56,27 @@ class AppAuth private constructor(context: Context) {
         _authStateFlow.value = AuthState()
         with(prefs.edit()) {
             clear()
-            commit()
+            apply()
+        }
+        sendPushToken()
+    }
+
+    fun sendPushToken(token: String? = null) {
+        Log.i(tag, "$token")
+        CoroutineScope(Dispatchers.Default).launch {
+            try {
+                if (token != null) {
+                    ApiClient.userService.save(PushToken(token))
+                }
+                Firebase.messaging.token.addOnSuccessListener { token ->
+                    CoroutineScope(Dispatchers.Default).launch {
+                        Log.i(tag, "$token")
+                        ApiClient.userService.save(PushToken(token))
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 

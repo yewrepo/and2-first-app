@@ -59,4 +59,15 @@ class Notifications(
             .build()
         NotificationManagerCompat.from(c).notify(Random.nextInt(100_000), notification)
     }
+
+    fun notifyText(content: String) {
+        val notification = NotificationCompat.Builder(c, channelId)
+            .setSmallIcon(R.drawable.ic_notification)
+            .setContentTitle(c.getString(R.string.app_name))
+            .setContentText(content)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .build()
+
+        NotificationManagerCompat.from(c).notify(Random.nextInt(100_000), notification)
+    }
 }
