@@ -10,14 +10,16 @@ import kotlinx.coroutines.launch
 import ru.netology.AppAuth
 import ru.netology.AuthState
 import ru.netology.extension.getOrThrow
-import ru.netology.network.ApiClient
+import ru.netology.network.UserAPI
 
 class AuthViewModel(
     app: Application,
+    private val userAPI: UserAPI,
+    private val appAuth: AppAuth,
 ) : AndroidViewModel(app) {
 
     val authenticated: Boolean
-        get() = AppAuth.getInstance().authStateFlow.value.id != 0L
+        get() = appAuth.authStateFlow.value.id != 0L
 
     val data: LiveData<AuthState> = AppAuth.getInstance()
         .authStateFlow.asLiveData(Dispatchers.Default)
@@ -25,9 +27,8 @@ class AuthViewModel(
     fun authUser(login: String, pass: String) {
         viewModelScope.launch {
             try {
-                val result = ApiClient.userService.authentication(login, pass)
-                    .getOrThrow()
-                AppAuth.getInstance().setAuth(result.id, result.token!!)
+                val result = userAPI.authentication(login, pass).getOrThrow()
+                appAuth.setAuth(result.id, result.token!!)
             } catch (e: Exception) {
             }
         }

@@ -9,11 +9,7 @@ import kotlinx.coroutines.flow.*
 import ru.netology.AppAuth
 import ru.netology.nmedia.Post
 import ru.netology.repository.*
-import ru.netology.AppDb
-import ru.netology.datasource.RetrofitPostSourceImpl
-import ru.netology.datasource.RoomPostSourceImpl
 import ru.netology.extension.getEmptyPost
-import ru.netology.network.ApiClient
 import ru.netology.network.AppError
 import ru.netology.nmedia.NmediaApp
 import ru.netology.nmedia.PhotoModel
@@ -21,18 +17,13 @@ import ru.netology.nmedia.R
 import java.io.File
 import kotlin.Exception
 
-
 class PostViewModel(
     app: Application,
+    private val repository: PostDataRepository
 ) : AndroidViewModel(app) {
 
     private val defaultMessage =
         getApplication<NmediaApp>().getString(R.string.error_request_message)
-
-    private val repository: PostDataRepository = RetrofitPostRepositoryImpl(
-        RetrofitPostSourceImpl(ApiClient.postsService),
-        RoomPostSourceImpl(AppDb.getInstance(app.applicationContext).postDao())
-    )
 
     val data: LiveData<FeedModel> = AppAuth.getInstance()
         .authStateFlow
