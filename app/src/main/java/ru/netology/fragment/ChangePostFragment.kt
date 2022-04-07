@@ -17,14 +17,18 @@ import com.bumptech.glide.Glide
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.github.dhaval2404.imagepicker.constant.ImageProvider
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.extension.PostDataArg
 import ru.netology.extension.hideKeyboard
 import ru.netology.extension.navigate
 import ru.netology.nmedia.Post
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentChangePostBinding
+import ru.netology.repository.PostDataRepository
 import ru.netology.vm.PostViewModel
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class ChangePostFragment : Fragment() {
 
     private lateinit var post: Post

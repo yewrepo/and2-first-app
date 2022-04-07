@@ -4,6 +4,7 @@ import android.app.Application
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import ru.netology.AppAuth
@@ -15,9 +16,11 @@ import ru.netology.nmedia.NmediaApp
 import ru.netology.nmedia.PhotoModel
 import ru.netology.nmedia.R
 import java.io.File
+import javax.inject.Inject
 import kotlin.Exception
 
-class PostViewModel(
+@HiltViewModel
+class PostViewModel @Inject constructor(
     app: Application,
     private val repository: PostDataRepository
 ) : AndroidViewModel(app) {

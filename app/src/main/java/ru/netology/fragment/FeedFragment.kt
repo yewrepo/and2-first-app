@@ -12,16 +12,29 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import dagger.hilt.android.AndroidEntryPoint
+import ru.netology.AppAuth
 import ru.netology.adapter.ClickCallback
 import ru.netology.adapter.PostAdapter
 import ru.netology.extension.navigate
 import ru.netology.extension.openYoutube
+import ru.netology.network.PostAPI
+import ru.netology.network.UserAPI
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentFeedBinding
+import ru.netology.repository.PostDataRepository
 import ru.netology.vm.AuthViewModel
 import ru.netology.vm.PostViewModel
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
+
+    @Inject
+    lateinit var repository: PostDataRepository
+
+    @Inject
+    lateinit var appAuth: AppAuth
 
     private lateinit var binding: FragmentFeedBinding
     private lateinit var recyclerManager: LinearLayoutManager

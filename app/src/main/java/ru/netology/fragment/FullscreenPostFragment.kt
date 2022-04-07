@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.adapter.ClickCallback
 import ru.netology.adapter.PostViewHolder
 import ru.netology.extension.PostDataArg
@@ -15,9 +16,15 @@ import ru.netology.extension.openYoutube
 import ru.netology.nmedia.Post
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentFullscreenPostBinding
+import ru.netology.repository.PostDataRepository
 import ru.netology.vm.PostViewModel
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class FullscreenPostFragment : Fragment() {
+
+    @Inject
+    lateinit var repository: PostDataRepository
 
     private lateinit var postHolder: PostViewHolder
     private lateinit var inputData: Post

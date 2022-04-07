@@ -1,7 +1,6 @@
 package ru.netology.nmedia
 
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -10,11 +9,21 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailabilityLight
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.AppAuth
 import ru.netology.nmedia.databinding.ActivityAppBinding
+import ru.netology.repository.PostDataRepository
 import ru.netology.vm.AuthViewModel
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class AppActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var repository: PostDataRepository
+
+    @Inject
+    lateinit var appAuth: AppAuth
 
     private lateinit var binding: ActivityAppBinding
     private val viewModel: AuthViewModel by viewModels()

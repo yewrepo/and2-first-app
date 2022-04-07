@@ -1,18 +1,22 @@
 package ru.netology.vm
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.netology.AppAuth
 import ru.netology.AuthState
 import ru.netology.extension.getOrThrow
 import ru.netology.network.UserAPI
+import javax.inject.Inject
 
-class AuthViewModel(
+@HiltViewModel
+class AuthViewModel @Inject constructor(
     app: Application,
     private val userAPI: UserAPI,
     private val appAuth: AppAuth,
@@ -30,6 +34,7 @@ class AuthViewModel(
                 val result = userAPI.authentication(login, pass).getOrThrow()
                 appAuth.setAuth(result.id, result.token!!)
             } catch (e: Exception) {
+                Log.e("qqq", "$e")
             }
         }
     }

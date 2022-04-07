@@ -7,10 +7,23 @@ import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import dagger.hilt.android.AndroidEntryPoint
+import ru.netology.AppAuth
+import ru.netology.network.UserAPI
 import ru.netology.nmedia.databinding.FragmentAuthBinding
 import ru.netology.vm.AuthViewModel
+import javax.inject.Inject
 
+
+@AndroidEntryPoint
 class AuthFragment : Fragment() {
+
+    @Inject
+    lateinit var userAPI: UserAPI
+
+    @Inject
+    lateinit var appAuth: AppAuth
+
 
     private var hasLogin: Boolean = false
     private var hasPassword: Boolean = false
