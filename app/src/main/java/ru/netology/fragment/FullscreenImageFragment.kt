@@ -27,7 +27,7 @@ class FullscreenImageFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        post = arguments!!.postData!!
+        post = requireArguments().postData!!
     }
 
     override fun onCreateView(

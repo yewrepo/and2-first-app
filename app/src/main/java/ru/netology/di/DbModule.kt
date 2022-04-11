@@ -9,10 +9,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import ru.netology.AppDb
 import ru.netology.datasource.PostDataSource
-import ru.netology.datasource.RetrofitPostSourceImpl
 import ru.netology.datasource.RoomPostSourceImpl
-import ru.netology.network.PostAPI
-import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module

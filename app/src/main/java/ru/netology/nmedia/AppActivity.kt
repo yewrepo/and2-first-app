@@ -12,7 +12,6 @@ import com.google.android.gms.common.GoogleApiAvailabilityLight
 import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.AppAuth
 import ru.netology.nmedia.databinding.ActivityAppBinding
-import ru.netology.repository.PostDataRepository
 import ru.netology.vm.AuthViewModel
 import javax.inject.Inject
 
@@ -20,10 +19,7 @@ import javax.inject.Inject
 class AppActivity : AppCompatActivity() {
 
     @Inject
-    lateinit var repository: PostDataRepository
-
-    @Inject
-    lateinit var appAuth: AppAuth
+    lateinit var googleApiAvailabilityLight: GoogleApiAvailabilityLight
 
     private lateinit var binding: ActivityAppBinding
     private val viewModel: AuthViewModel by viewModels()
@@ -34,11 +30,11 @@ class AppActivity : AppCompatActivity() {
         setContentView(binding.root)
         checkGoogleAvailability()
 
-        viewModel.data.observe(this, { authState ->
+        viewModel.data.observe(this) { authState ->
             if (authState.id > 0) {
                 getNavigation().navigateUp()
             }
-        })
+        }
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
@@ -71,7 +67,7 @@ class AppActivity : AppCompatActivity() {
     private fun getNavigation() = findNavController(R.id.nav_host_fragment_container)
 
     private fun checkGoogleAvailability() {
-        with(GoogleApiAvailabilityLight.getInstance()) {
+        with(googleApiAvailabilityLight) {
             val code = isGooglePlayServicesAvailable(this@AppActivity)
             if (code == ConnectionResult.SUCCESS) {
                 return@with

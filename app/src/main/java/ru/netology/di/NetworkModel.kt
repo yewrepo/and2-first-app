@@ -1,6 +1,5 @@
 package ru.netology.di
 
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

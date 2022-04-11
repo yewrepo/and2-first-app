@@ -24,9 +24,7 @@ import ru.netology.extension.navigate
 import ru.netology.nmedia.Post
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentChangePostBinding
-import ru.netology.repository.PostDataRepository
 import ru.netology.vm.PostViewModel
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class ChangePostFragment : Fragment() {
@@ -57,7 +55,7 @@ class ChangePostFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        post = arguments!!.postData!!
+        post = requireArguments().postData!!
     }
 
     override fun onCreateView(
@@ -120,7 +118,7 @@ class ChangePostFragment : Fragment() {
             )
         }
 
-        viewModel.editPost.observe(viewLifecycleOwner, { post ->
+        viewModel.editPost.observe(viewLifecycleOwner) { post ->
             binding.content.setText(post?.content.orEmpty())
             binding.videoLink.setText(post?.youtubeLink.orEmpty())
             binding.previewCard.isVisible = post?.photoModel != null
@@ -132,12 +130,12 @@ class ChangePostFragment : Fragment() {
                     .centerCrop()
                     .into(binding.photoLayoutPreview)
             }
-        })
+        }
 
-        viewModel.postCreated.observe(viewLifecycleOwner, {
+        viewModel.postCreated.observe(viewLifecycleOwner) {
             viewModel.loadPosts()
             findNavController().navigateUp()
-        })
+        }
     }
 
     private fun getInputtedText() = binding.content.text?.toString().orEmpty()
