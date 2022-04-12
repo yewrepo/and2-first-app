@@ -45,7 +45,7 @@ class PostViewModel @Inject constructor(
     val loadingState: LiveData<LoadingState>
         get() = _loadingState
 
-    private val edited = MutableLiveData(getEmptyPost())
+    private val edited = MutableLiveData(getEmptyPost(getId()))
     val editPost: LiveData<Post>
         get() = edited
 
@@ -63,15 +63,17 @@ class PostViewModel @Inject constructor(
                 execute(defaultMessage, _loadingState) {
                     repository.save(post = it)
                     _postCreated.postValue(Unit)
-                    edited.value = getEmptyPost()
+                    edited.value = getEmptyPost(getId())
                 }
             }
         }
     }
 
     fun cancel() {
-        edited.value = getEmptyPost()
+        edited.value = getEmptyPost(getId())
     }
+
+    private fun getId() = appAuth.authStateFlow.value.id
 
     fun removePhoto() {
         edited.value?.let { post ->

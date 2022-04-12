@@ -25,7 +25,7 @@ class AuthViewModel @Inject constructor(
     val authenticated: Boolean
         get() = appAuth.authStateFlow.value.id != 0L
 
-    val data: LiveData<AuthState> = AppAuth.getInstance()
+    val data: LiveData<AuthState> = appAuth
         .authStateFlow.asLiveData(Dispatchers.Default)
 
     private val _loadingState = MutableLiveData<State>()
