@@ -23,8 +23,6 @@ class AppAuth @Inject constructor(
 ) {
     private val tag = AppAuth::class.java.simpleName
     private val prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE)
-    private val idKey = "id"
-    private val tokenKey = "token"
 
     private val _authStateFlow: MutableStateFlow<AuthState>
 
@@ -88,6 +86,10 @@ class AppAuth @Inject constructor(
     }
 
     companion object {
+
+        const val idKey = "id"
+        const val tokenKey = "token"
+
         @Volatile
         private var instance: AppAuth? = null
 

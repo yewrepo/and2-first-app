@@ -111,10 +111,8 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         binding.recycler.layoutManager = recyclerManager
         binding.recycler.adapter = postAdapter
 
-        authViewModel.data.observe(viewLifecycleOwner) { authState ->
-            if (authState.id > 0) {
-                viewModel.loadPosts()
-            }
+        authViewModel.data.observe(viewLifecycleOwner) { _ ->
+            viewModel.loadPosts()
         }
 
         viewModel.loadingState.observe(viewLifecycleOwner) { loadingState ->

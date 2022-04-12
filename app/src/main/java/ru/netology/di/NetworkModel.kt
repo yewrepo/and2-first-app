@@ -1,13 +1,17 @@
 package ru.netology.di
 
+import android.content.Context
+import android.content.SharedPreferences
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import ru.netology.AppAuth
 import ru.netology.datasource.PostDataSource
 import ru.netology.datasource.RetrofitPostSourceImpl
 import ru.netology.network.ApiClient
@@ -22,15 +26,24 @@ import javax.inject.Singleton
 class NetworkModel {
 
     @Provides
-    fun provideBaseUrl() = ApiClient.BASE_URL
+    fun provideSharedPref(@ApplicationContext context: Context): SharedPreferences {
+        return context.getSharedPreferences("auth", Context.MODE_PRIVATE)
+    }
 
+    @Provides
+    fun provideRequestInterceptor(prefs: SharedPreferences) : AuthInterceptor {
+        return AuthInterceptor(prefs)
+    }
+
+    @Provides
+    fun provideBaseUrl() = ApiClient.BASE_URL
 
     @Singleton
     @Provides
-    fun provideOkHttpClient() = OkHttpClient.Builder()
+    fun provideOkHttpClient(interceptor: AuthInterceptor) = OkHttpClient.Builder()
         .connectTimeout(10, TimeUnit.SECONDS)
         .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-        .addNetworkInterceptor(AuthInterceptor())
+        .addNetworkInterceptor(interceptor)
         .build()
 
     @Singleton
@@ -51,6 +64,6 @@ class NetworkModel {
 
     @Provides
     @Singleton
-    fun provideRemoteSource(postApi: PostAPI) : PostDataSource = RetrofitPostSourceImpl(postApi)
+    fun provideRemoteSource(postApi: PostAPI): PostDataSource = RetrofitPostSourceImpl(postApi)
 
 }

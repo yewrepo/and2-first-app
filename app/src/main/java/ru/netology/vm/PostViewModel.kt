@@ -22,13 +22,14 @@ import kotlin.Exception
 @HiltViewModel
 class PostViewModel @Inject constructor(
     app: Application,
-    private val repository: PostDataRepository
+    private val repository: PostDataRepository,
+    private val appAuth: AppAuth
 ) : AndroidViewModel(app) {
 
     private val defaultMessage =
         getApplication<NmediaApp>().getString(R.string.error_request_message)
 
-    val data: LiveData<FeedModel> = AppAuth.getInstance()
+    val data: LiveData<FeedModel> = appAuth
         .authStateFlow
         .flatMapLatest { (myId, _) ->
             repository.data

@@ -10,7 +10,6 @@ import androidx.navigation.findNavController
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailabilityLight
 import dagger.hilt.android.AndroidEntryPoint
-import ru.netology.AppAuth
 import ru.netology.nmedia.databinding.ActivityAppBinding
 import ru.netology.vm.AuthViewModel
 import javax.inject.Inject
@@ -35,6 +34,11 @@ class AppActivity : AppCompatActivity() {
                 getNavigation().navigateUp()
             }
         }
+        viewModel.loadingState.observe(this) { state ->
+            if (state == Success) {
+                invalidateOptionsMenu()
+            }
+        }
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
@@ -57,7 +61,7 @@ class AppActivity : AppCompatActivity() {
                 true
             }
             R.id.signout -> {
-                AppAuth.getInstance().removeAuth()
+                viewModel.removeAuth()
                 true
             }
             else -> super.onOptionsItemSelected(item)

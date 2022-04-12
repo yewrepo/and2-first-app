@@ -16,7 +16,7 @@ class ViewModelFactory(
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
             modelClass.isAssignableFrom(PostViewModel::class.java) -> {
-                PostViewModel(app, repository) as T
+                PostViewModel(app, repository, appAuth) as T
             }
             modelClass.isAssignableFrom(AuthViewModel::class.java) -> {
                 AuthViewModel(app, userAPI, appAuth) as T

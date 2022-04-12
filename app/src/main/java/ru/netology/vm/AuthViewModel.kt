@@ -1,11 +1,7 @@
 package ru.netology.vm
 
 import android.app.Application
-import android.util.Log
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -13,6 +9,10 @@ import ru.netology.AppAuth
 import ru.netology.AuthState
 import ru.netology.extension.getOrThrow
 import ru.netology.network.UserAPI
+import ru.netology.nmedia.Error
+import ru.netology.nmedia.Loading
+import ru.netology.nmedia.State
+import ru.netology.nmedia.Success
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,15 +28,26 @@ class AuthViewModel @Inject constructor(
     val data: LiveData<AuthState> = AppAuth.getInstance()
         .authStateFlow.asLiveData(Dispatchers.Default)
 
+    private val _loadingState = MutableLiveData<State>()
+    val loadingState: LiveData<State>
+        get() = _loadingState
+
     fun authUser(login: String, pass: String) {
+        _loadingState.postValue(Loading)
         viewModelScope.launch {
             try {
                 val result = userAPI.authentication(login, pass).getOrThrow()
                 appAuth.setAuth(result.id, result.token!!)
+                _loadingState.postValue(Success)
             } catch (e: Exception) {
-                Log.e("qqq", "$e")
+                _loadingState.postValue(Error)
             }
         }
+    }
+
+    fun removeAuth() {
+        appAuth.removeAuth()
+        _loadingState.postValue(Success)
     }
 
 }
