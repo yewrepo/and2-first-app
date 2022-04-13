@@ -9,14 +9,15 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import ru.netology.adapter.ClickCallback
 import ru.netology.adapter.PostAdapter
 import ru.netology.extension.navigate
-import ru.netology.extension.openYoutube
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.vm.AuthViewModel
@@ -52,15 +53,15 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
                 postAdapter.apply {
                     navigate(
                         R.id.action_feedFragment_to_fullscreenPostFragment,
-                        currentList[position]
+                        peek(position)
                     )
                 }
             }
 
             override fun onLikeClick(position: Int) {
                 postAdapter.apply {
-                    val post = this.currentList[position]
-                    viewModel.likeById(post.id, post.likedByMe)
+                   /* val post = peek(position)
+                    viewModel.likeById(post.id, post.likedByMe)*/
                 }
             }
 
@@ -72,20 +73,20 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
             override fun onRemoveClick(position: Int) {
                 postAdapter.apply {
-                    viewModel.removeById(this.currentList[position].id)
+                   // viewModel.removeById(this.currentList[position].id)
                 }
             }
 
             override fun onEditClick(position: Int) {
                 postAdapter.apply {
-                    val existed = this.currentList[position]
-                    viewModel.edit(existed)
+                    /*val existed = this.currentList[position]
+                    viewModel.edit(existed)*/
                 }
             }
 
             override fun onYoutubeLinkClick(position: Int) {
                 postAdapter.apply {
-                    this.currentList[position].openYoutube(requireActivity())
+                    //this.currentList[position].openYoutube(requireActivity())
                 }
             }
 
@@ -93,7 +94,7 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
                 postAdapter.apply {
                     navigate(
                         R.id.action_feedFragment_to_fullscreenImageFragment,
-                        post = this.currentList[position]
+                        post = peek(position)
                     )
                 }
             }
@@ -125,7 +126,11 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
             }
         }
 
-        viewModel.data.observe(viewLifecycleOwner) { feedModel ->
+        lifecycleScope.launchWhenCreated {
+            viewModel.data.collectLatest(postAdapter::submitData)
+        }
+
+        /*viewModel.data.observe(viewLifecycleOwner) { feedModel ->
             val oldItemsCount = postAdapter.currentList.size
             postAdapter.submitList(feedModel.posts) {
                 if (oldItemsCount < feedModel.posts.size) {
@@ -134,7 +139,7 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
             }
             binding.recycler.isVisible = true
             binding.emptyText.isVisible = feedModel.empty
-        }
+        }*/
 
         viewModel.editPost.observe(viewLifecycleOwner) { post ->
             if (post.id != 0L) {

@@ -4,6 +4,9 @@ import android.app.Application
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.*
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -29,17 +32,18 @@ class PostViewModel @Inject constructor(
     private val defaultMessage =
         getApplication<NmediaApp>().getString(R.string.error_request_message)
 
-    val data: LiveData<FeedModel> = appAuth
-        .authStateFlow
+    private val cached = repository
+        .data
+        .cachedIn(viewModelScope)
+
+    val data: Flow<PagingData<Post>> = appAuth.authStateFlow
         .flatMapLatest { (myId, _) ->
-            repository.data
-                .map { posts ->
-                    FeedModel(
-                        posts.map { it.copy(ownedByMe = it.authorId == myId && myId > 0) },
-                        posts.isEmpty()
-                    )
+            cached.map { pagingData ->
+                pagingData.map { post ->
+                    post.copy(ownedByMe = post.authorId == myId)
                 }
-        }.asLiveData(Dispatchers.Default)
+            }
+        }
 
     private val _loadingState = MutableLiveData(LoadingState())
     val loadingState: LiveData<LoadingState>
@@ -128,23 +132,23 @@ class PostViewModel @Inject constructor(
     }
 
     fun requestUpdates() {
-        viewModelScope.launch(Dispatchers.Main) {
-            CoroutineScope(Dispatchers.IO).launchPeriodicAsync(20_000) {
-                launch {
-                    try {
-                        val firstId = data.value?.posts?.firstOrNull()?.id ?: 0L
-                        val count = repository.getNewerCount(firstId).single()
-                        if (count > 0) {
-                            _loadingState.value?.apply {
-                                _loadingState.postValue(copy(newPostNotify = true))
-                            }
-                        }
-                    } catch (e: Exception) {
-                        Log.e("PostViewModel", "error: $e")
-                    }
-                }
-            }.join()
-        }
+        /* viewModelScope.launch(Dispatchers.Main) {
+             CoroutineScope(Dispatchers.IO).launchPeriodicAsync(20_000) {
+                 launch {
+                     try {
+                         val firstId = data.value?.posts?.firstOrNull()?.id ?: 0L
+                         val count = repository.getNewerCount(firstId).single()
+                         if (count > 0) {
+                             _loadingState.value?.apply {
+                                 _loadingState.postValue(copy(newPostNotify = true))
+                             }
+                         }
+                     } catch (e: Exception) {
+                         Log.e("PostViewModel", "error: $e")
+                     }
+                 }
+             }.join()
+         }*/
     }
 }
 
