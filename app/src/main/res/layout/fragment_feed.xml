@@ -34,6 +34,7 @@
             android:id="@+id/errorGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             app:constraint_referenced_ids="retryTitle,retryButton" />
 
         <TextView
@@ -78,6 +79,7 @@
             android:padding="8dp"
             android:text="Новые сообщения"
             android:textColor="?attr/colorOnPrimary"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

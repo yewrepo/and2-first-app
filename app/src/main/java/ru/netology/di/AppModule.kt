@@ -6,7 +6,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import ru.netology.AppDb
-import ru.netology.db.dao.PostDao
 import ru.netology.db.dao.PostRemoteKeyDao
 import ru.netology.network.PostAPI
 import ru.netology.repository.PostRemoteMediator
@@ -24,7 +23,6 @@ class AppModule {
     fun provideMediator(
         postApi: PostAPI,
         appDb: AppDb,
-        postDao: PostDao,
         postRemoteKeyDao: PostRemoteKeyDao
-    ): PostRemoteMediator = PostRemoteMediator(postApi, appDb, postDao, postRemoteKeyDao)
+    ): PostRemoteMediator = PostRemoteMediator(postApi, appDb, postRemoteKeyDao)
 }

@@ -2,7 +2,6 @@ package ru.netology.vm
 
 import android.app.Application
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.*
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
@@ -125,9 +124,9 @@ class PostViewModel @Inject constructor(
 
     fun loadPosts() {
         viewModelScope.launch {
-            execute(defaultMessage, _loadingState) {
+           /* execute(defaultMessage, _loadingState) {
                 repository.getAll()
-            }
+            }*/
         }
     }
 

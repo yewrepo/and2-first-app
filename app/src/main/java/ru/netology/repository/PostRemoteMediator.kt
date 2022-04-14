@@ -1,5 +1,6 @@
 package ru.netology.repository
 
+import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
@@ -7,7 +8,6 @@ import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import ru.netology.AppDb
 import ru.netology.db.PostRemoteKeyEntity
-import ru.netology.db.dao.PostDao
 import ru.netology.db.dao.PostRemoteKeyDao
 import ru.netology.db.toEntity
 import ru.netology.network.ApiError
@@ -19,7 +19,6 @@ import javax.inject.Inject
 class PostRemoteMediator @Inject constructor(
     private val service: PostAPI,
     private val db: AppDb,
-    private val postDao: PostDao,
     private val postRemoteKeyDao: PostRemoteKeyDao,
 ) : RemoteMediator<Int, Post>() {
     override suspend fun load(
@@ -67,7 +66,7 @@ class PostRemoteMediator @Inject constructor(
                                 ),
                             )
                         )
-                        postDao.removeAll()
+                        db.postDao().removeAll()
                     }
                     LoadType.PREPEND -> {
                         postRemoteKeyDao.insert(
@@ -86,10 +85,11 @@ class PostRemoteMediator @Inject constructor(
                         )
                     }
                 }
-                postDao.insert(body.toEntity())
+                db.postDao().insert(body.toEntity())
             }
             return MediatorResult.Success(endOfPaginationReached = body.isEmpty())
         } catch (e: Exception) {
+            Log.e("PostRemoteMediator", "$e")
             return MediatorResult.Error(e)
         }
     }

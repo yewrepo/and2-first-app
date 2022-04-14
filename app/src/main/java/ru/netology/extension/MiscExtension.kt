@@ -13,6 +13,8 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.paging.CombinedLoadStates
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.RecyclerView
 import retrofit2.Response
 import ru.netology.fragment.ChangePostFragment.Companion.postData
@@ -132,3 +134,8 @@ fun getEmptyPost(id: Long): Post {
         ownedByMe = false
     )
 }
+
+fun CombinedLoadStates.isLoading() =
+    this.refresh is LoadState.Loading ||
+            this.prepend is LoadState.Loading ||
+            this.append is LoadState.Loading

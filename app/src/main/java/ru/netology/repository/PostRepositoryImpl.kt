@@ -31,12 +31,6 @@ class PostRepositoryImpl @Inject constructor(
 
     override fun getNewerCount(id: Long): Flow<Int> = flow {
         remoteSource.getNewer(id).let {
-            val list = it.map { post ->
-                post.copy(
-                    isNew = true
-                )
-            }
-            localSource.save(list)
             emit(it.size)
         }
     }.flowOn(Dispatchers.Default)

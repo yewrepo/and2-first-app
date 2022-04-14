@@ -4,12 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -17,6 +17,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import ru.netology.adapter.ClickCallback
 import ru.netology.adapter.PostAdapter
+import ru.netology.extension.isLoading
 import ru.netology.extension.navigate
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentFeedBinding
@@ -60,8 +61,8 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
             override fun onLikeClick(position: Int) {
                 postAdapter.apply {
-                   /* val post = peek(position)
-                    viewModel.likeById(post.id, post.likedByMe)*/
+                    /* val post = peek(position)
+                     viewModel.likeById(post.id, post.likedByMe)*/
                 }
             }
 
@@ -73,7 +74,7 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
             override fun onRemoveClick(position: Int) {
                 postAdapter.apply {
-                   // viewModel.removeById(this.currentList[position].id)
+                    // viewModel.removeById(this.currentList[position].id)
                 }
             }
 
@@ -101,11 +102,11 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         })
 
         binding.newPostsNotify.setOnClickListener {
-            viewModel.loadPosts()
+            postAdapter.refresh()
         }
 
         binding.retryButton.setOnClickListener {
-            viewModel.loadPosts()
+            postAdapter.retry()
         }
         binding.swiper.setOnRefreshListener(this)
         recyclerManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
@@ -113,33 +114,25 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         binding.recycler.adapter = postAdapter
 
         authViewModel.data.observe(viewLifecycleOwner) { _ ->
-            viewModel.loadPosts()
+            postAdapter.refresh()
         }
 
-        viewModel.loadingState.observe(viewLifecycleOwner) { loadingState ->
-            binding.recycler.isVisible = !loadingState.isLoading && !loadingState.isError
-            binding.swiper.isRefreshing = loadingState.isLoading
-            binding.errorGroup.isVisible = loadingState.isError
-            binding.newPostsNotify.isVisible = loadingState.newPostNotify
-            loadingState.errorDescription?.apply {
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        lifecycleScope.launchWhenCreated {
+            viewModel.data.collectLatest {
+                postAdapter.submitData(it)
+                binding.errorGroup.isVisible = false
             }
         }
 
         lifecycleScope.launchWhenCreated {
-            viewModel.data.collectLatest(postAdapter::submitData)
+            postAdapter.loadStateFlow.collectLatest { state ->
+                binding.swiper.isRefreshing = state.isLoading()
+                binding.recycler.isVisible = state.refresh !is LoadState.Error
+                binding.errorGroup.isVisible = state.refresh is LoadState.Error
+            }
         }
 
-        /*viewModel.data.observe(viewLifecycleOwner) { feedModel ->
-            val oldItemsCount = postAdapter.currentList.size
-            postAdapter.submitList(feedModel.posts) {
-                if (oldItemsCount < feedModel.posts.size) {
-                    recyclerManager.scrollToPosition(0)
-                }
-            }
-            binding.recycler.isVisible = true
-            binding.emptyText.isVisible = feedModel.empty
-        }*/
+        binding.swiper.setOnRefreshListener(postAdapter::refresh)
 
         viewModel.editPost.observe(viewLifecycleOwner) { post ->
             if (post.id != 0L) {
@@ -162,12 +155,12 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         super.onResume()
         postAdapter.apply {
             if (itemCount == 0) {
-                viewModel.loadPosts()
+                postAdapter.refresh()
             }
         }
     }
 
     override fun onRefresh() {
-        viewModel.loadPosts()
+        postAdapter.refresh()
     }
 }
