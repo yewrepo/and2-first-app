@@ -100,6 +100,7 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
         binding.newPostsNotify.setOnClickListener {
             postAdapter.refresh()
+            binding.newPostsNotify.isVisible = false
         }
 
         binding.retryButton.setOnClickListener {
@@ -130,6 +131,10 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         }
 
         binding.swiper.setOnRefreshListener(postAdapter::refresh)
+
+        viewModel.newPostsNotify.observe(viewLifecycleOwner) {
+            binding.newPostsNotify.isVisible = it.newPostNotify
+        }
 
         viewModel.editPost.observe(viewLifecycleOwner) { post ->
             if (post.id != 0L) {

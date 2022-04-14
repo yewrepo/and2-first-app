@@ -133,7 +133,6 @@ class ChangePostFragment : Fragment() {
         }
 
         viewModel.postCreated.observe(viewLifecycleOwner) {
-            viewModel.loadPosts()
             findNavController().navigateUp()
         }
     }
