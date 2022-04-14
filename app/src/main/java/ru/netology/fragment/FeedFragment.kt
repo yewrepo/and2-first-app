@@ -19,6 +19,7 @@ import ru.netology.adapter.ClickCallback
 import ru.netology.adapter.PostAdapter
 import ru.netology.extension.isLoading
 import ru.netology.extension.navigate
+import ru.netology.extension.openYoutube
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.vm.AuthViewModel
@@ -51,51 +52,47 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
         postAdapter = PostAdapter(object : ClickCallback {
             override fun onOpenClick(position: Int) {
-                postAdapter.apply {
+                postAdapter.peek(position)?.apply {
                     navigate(
-                        R.id.action_feedFragment_to_fullscreenPostFragment,
-                        peek(position)
+                        R.id.action_feedFragment_to_fullscreenPostFragment, post = this
                     )
                 }
             }
 
             override fun onLikeClick(position: Int) {
-                postAdapter.apply {
-                    /* val post = peek(position)
-                     viewModel.likeById(post.id, post.likedByMe)*/
+                postAdapter.peek(position)?.apply {
+                    viewModel.likeById(id, likedByMe)
                 }
             }
 
             override fun onShareClick(position: Int) {
-                postAdapter.apply {
+                postAdapter.peek(position)?.apply {
                     //viewModel.shareById(this.currentList[position].id)
                 }
             }
 
             override fun onRemoveClick(position: Int) {
-                postAdapter.apply {
-                    // viewModel.removeById(this.currentList[position].id)
+                postAdapter.peek(position)?.apply {
+                    viewModel.removeById(id)
                 }
             }
 
             override fun onEditClick(position: Int) {
-                postAdapter.apply {
-                    /*val existed = this.currentList[position]
-                    viewModel.edit(existed)*/
+                postAdapter.peek(position)?.apply {
+                    viewModel.edit(this)
                 }
             }
 
             override fun onYoutubeLinkClick(position: Int) {
-                postAdapter.apply {
-                    //this.currentList[position].openYoutube(requireActivity())
+                postAdapter.peek(position)?.apply {
+                    openYoutube(requireActivity())
                 }
             }
 
             override fun onPhotoOpenClick(position: Int) {
-                postAdapter.apply {
+                postAdapter.peek(position)?.apply {
                     navigate(
-                        R.id.action_feedFragment_to_fullscreenImageFragment,
-                        post = peek(position)
+                        R.id.action_feedFragment_to_fullscreenImageFragment, post = this
                     )
                 }
             }
@@ -113,7 +110,7 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         binding.recycler.layoutManager = recyclerManager
         binding.recycler.adapter = postAdapter
 
-        authViewModel.data.observe(viewLifecycleOwner) { _ ->
+        authViewModel.data.observe(viewLifecycleOwner) {
             postAdapter.refresh()
         }
 
