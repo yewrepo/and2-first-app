@@ -5,7 +5,7 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import ru.netology.repository.PostDataRepository
-import ru.netology.repository.RetrofitPostRepositoryImpl
+import ru.netology.repository.PostRepositoryImpl
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -14,5 +14,5 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun provideRepository(impl: RetrofitPostRepositoryImpl): PostDataRepository
+    abstract fun provideRepository(impl: PostRepositoryImpl): PostDataRepository
 }

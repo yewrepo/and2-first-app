@@ -2,6 +2,7 @@ package ru.netology.datasource
 
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.map
+import androidx.paging.PagingSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -23,6 +24,12 @@ class RoomPostSourceImpl @Inject constructor(
         .map(List<PostEntity>::toListDto)
         .asFlow()
         .flowOn(Dispatchers.Default)
+
+    override fun pagingSource(): PagingSource<Int, Post> {
+        return dao.pagingSource().map {
+            it.toDto()
+        }.asPagingSourceFactory(Dispatchers.IO).invoke()
+    }
 
     override suspend fun getNewer(id: Long): List<Post> {
         return dao.getNewer().map { it.toDto() }

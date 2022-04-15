@@ -82,14 +82,14 @@ class FullscreenPostFragment : Fragment() {
             }
         })
         postHolder.bind(inputData)
-        viewModel.data.observe(viewLifecycleOwner) { feedModel ->
+       /* viewModel.data.observe(viewLifecycleOwner) { feedModel ->
             feedModel.posts.find {
                 it.id == inputData.id
             }?.let {
                 inputData = it
                 postHolder.bind(inputData)
             } ?: findNavController().navigateUp()
-        }
+        }*/
 
         viewModel.editPost.observe(viewLifecycleOwner) { post ->
             if (post.id != 0L) {

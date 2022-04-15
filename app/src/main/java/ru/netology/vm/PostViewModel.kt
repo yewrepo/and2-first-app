@@ -4,6 +4,9 @@ import android.app.Application
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.*
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -12,9 +15,7 @@ import ru.netology.nmedia.Post
 import ru.netology.repository.*
 import ru.netology.extension.getEmptyPost
 import ru.netology.network.AppError
-import ru.netology.nmedia.NmediaApp
 import ru.netology.nmedia.PhotoModel
-import ru.netology.nmedia.R
 import java.io.File
 import javax.inject.Inject
 import kotlin.Exception
@@ -26,24 +27,22 @@ class PostViewModel @Inject constructor(
     private val appAuth: AppAuth
 ) : AndroidViewModel(app) {
 
-    private val defaultMessage =
-        getApplication<NmediaApp>().getString(R.string.error_request_message)
+    private val cached = repository
+        .data
+        .cachedIn(viewModelScope)
 
-    val data: LiveData<FeedModel> = appAuth
-        .authStateFlow
+    val data: Flow<PagingData<Post>> = appAuth.authStateFlow
         .flatMapLatest { (myId, _) ->
-            repository.data
-                .map { posts ->
-                    FeedModel(
-                        posts.map { it.copy(ownedByMe = it.authorId == myId && myId > 0) },
-                        posts.isEmpty()
-                    )
+            cached.map { pagingData ->
+                pagingData.map { post ->
+                    post.copy(ownedByMe = post.authorId == myId)
                 }
-        }.asLiveData(Dispatchers.Default)
+            }
+        }
 
-    private val _loadingState = MutableLiveData(LoadingState())
-    val loadingState: LiveData<LoadingState>
-        get() = _loadingState
+    private val _newPostsNotify = MutableLiveData(LoadingState())
+    val newPostsNotify: LiveData<LoadingState>
+        get() = _newPostsNotify
 
     private val edited = MutableLiveData(getEmptyPost(getId()))
     val editPost: LiveData<Post>
@@ -60,11 +59,9 @@ class PostViewModel @Inject constructor(
     fun save() {
         viewModelScope.launch {
             edited.value?.let {
-                execute(defaultMessage, _loadingState) {
-                    repository.save(post = it)
-                    _postCreated.postValue(Unit)
-                    edited.value = getEmptyPost(getId())
-                }
+                repository.save(post = it)
+                _postCreated.postValue(Unit)
+                edited.value = getEmptyPost(getId())
             }
         }
     }
@@ -101,29 +98,17 @@ class PostViewModel @Inject constructor(
 
     fun likeById(id: Long, liked: Boolean) {
         viewModelScope.launch {
-            execute(defaultMessage, _loadingState) {
-                if (liked) {
-                    repository.likeById(id)
-                } else {
-                    repository.dislikeById(id)
-                }
+            if (liked) {
+                repository.likeById(id)
+            } else {
+                repository.dislikeById(id)
             }
         }
     }
 
     fun removeById(id: Long) {
         viewModelScope.launch {
-            execute(defaultMessage, _loadingState) {
-                repository.removeById(id)
-            }
-        }
-    }
-
-    fun loadPosts() {
-        viewModelScope.launch {
-            execute(defaultMessage, _loadingState) {
-                repository.getAll()
-            }
+            repository.removeById(id)
         }
     }
 
@@ -132,12 +117,10 @@ class PostViewModel @Inject constructor(
             CoroutineScope(Dispatchers.IO).launchPeriodicAsync(20_000) {
                 launch {
                     try {
-                        val firstId = data.value?.posts?.firstOrNull()?.id ?: 0L
+                        val firstId = repository.getAll().firstOrNull()?.id ?: 0L
                         val count = repository.getNewerCount(firstId).single()
-                        if (count > 0) {
-                            _loadingState.value?.apply {
-                                _loadingState.postValue(copy(newPostNotify = true))
-                            }
+                        _newPostsNotify.value?.apply {
+                            _newPostsNotify.postValue(copy(newPostNotify = count > 0))
                         }
                     } catch (e: Exception) {
                         Log.e("PostViewModel", "error: $e")
@@ -153,25 +136,6 @@ private fun Throwable.toErrorModel(defaultMessage: String): ErrorData {
         ErrorData(this.code)
     } else {
         ErrorData(defaultMessage)
-    }
-}
-
-private suspend fun execute(
-    defaultMessage: String,
-    data: MutableLiveData<LoadingState>,
-    block: suspend () -> Unit
-) {
-    try {
-        data.postValue(LoadingState(isLoading = true))
-        block()
-        data.postValue(LoadingState())
-    } catch (e: Exception) {
-        data.postValue(
-            LoadingState(
-                isError = true,
-                errorDescription = e.toErrorModel(defaultMessage)
-            )
-        )
     }
 }
 

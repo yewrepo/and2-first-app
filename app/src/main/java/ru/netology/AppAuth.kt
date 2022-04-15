@@ -72,11 +72,16 @@ class AppAuth @Inject constructor(
             try {
                 if (token != null) {
                     userAPI.save(PushToken(token))
-                }
-                Firebase.messaging.token.addOnSuccessListener { token ->
-                    CoroutineScope(Dispatchers.Default).launch {
-                        Log.i(tag, "$token")
-                        userAPI.save(PushToken(token))
+                } else {
+                    Firebase.messaging.token.addOnSuccessListener { token ->
+                        CoroutineScope(Dispatchers.Default).launch {
+                            try {
+                                Log.i(tag, "$token")
+                                userAPI.save(PushToken(token))
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        }
                     }
                 }
             } catch (e: Exception) {

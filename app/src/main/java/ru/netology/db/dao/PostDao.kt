@@ -1,12 +1,16 @@
 package ru.netology.db.dao
 
 import androidx.lifecycle.LiveData
+import androidx.paging.DataSource
 import androidx.room.*
 import ru.netology.db.PostEntity
 import ru.netology.nmedia.AttachmentType
 
 @Dao
 interface PostDao {
+
+    @Query("SELECT * FROM PostEntity ORDER BY id DESC")
+    fun pagingSource(): DataSource.Factory<Int, PostEntity>
 
     @Query("SELECT * FROM PostEntity WHERE isNew = 'true' ORDER BY id ")
     fun getNewer(): List<PostEntity>
@@ -48,6 +52,9 @@ interface PostDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(post: List<PostEntity>)
+
+    @Query("DELETE FROM PostEntity")
+    suspend fun removeAll()
 }
 
 class Converters {

@@ -1,5 +1,9 @@
 package ru.netology.repository
 
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -11,22 +15,22 @@ import ru.netology.nmedia.MediaUpload
 import ru.netology.nmedia.Post
 import javax.inject.Inject
 
-class RetrofitPostRepositoryImpl @Inject constructor(
+class PostRepositoryImpl @Inject constructor(
     @RetrofitPostSource private val remoteSource: PostDataSource,
     @RoomPostSource private val localSource: PostDataSource,
+    mediator: PostRemoteMediator
 ) : PostDataRepository {
 
-    override val data: Flow<List<Post>>
-        get() = localSource.get()
+    @OptIn(ExperimentalPagingApi::class)
+    override val data: Flow<PagingData<Post>> = Pager(
+        config = PagingConfig(pageSize = 5),
+        initialKey = 0,
+        remoteMediator = mediator,
+        pagingSourceFactory = localSource::pagingSource
+    ).flow
 
     override fun getNewerCount(id: Long): Flow<Int> = flow {
         remoteSource.getNewer(id).let {
-            val list = it.map { post ->
-                post.copy(
-                    isNew = true
-                )
-            }
-            localSource.save(list)
             emit(it.size)
         }
     }.flowOn(Dispatchers.Default)

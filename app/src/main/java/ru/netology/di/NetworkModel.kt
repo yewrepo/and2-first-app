@@ -65,5 +65,4 @@ class NetworkModel {
     @Provides
     @Singleton
     fun provideRemoteSource(postApi: PostAPI): PostDataSource = RetrofitPostSourceImpl(postApi)
-
 }

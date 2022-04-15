@@ -1,5 +1,6 @@
 package ru.netology.datasource
 
+import androidx.paging.PagingSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okhttp3.MultipartBody
@@ -15,6 +16,10 @@ class RetrofitPostSourceImpl @Inject constructor(
 ) : PostDataSource {
 
     override fun get(): Flow<List<Post>> = flow { }
+
+    override fun pagingSource(): PagingSource<Int, Post> {
+        throw IllegalStateException("Not use here")
+    }
 
     override suspend fun getNewer(id: Long): List<Post> {
         return handleError {
