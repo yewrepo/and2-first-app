@@ -4,20 +4,25 @@ import android.content.Context
 import android.util.Log
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import ru.netology.network.ApiClient
+import ru.netology.network.UserAPI
 import ru.netology.nmedia.PushToken
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class AppAuth private constructor(context: Context) {
+@Singleton
+class AppAuth @Inject constructor(
+    @ApplicationContext context: Context,
+    private val userAPI: UserAPI
+) {
     private val tag = AppAuth::class.java.simpleName
     private val prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE)
-    private val idKey = "id"
-    private val tokenKey = "token"
 
     private val _authStateFlow: MutableStateFlow<AuthState>
 
@@ -46,7 +51,7 @@ class AppAuth private constructor(context: Context) {
         with(prefs.edit()) {
             putLong(idKey, id)
             putString(tokenKey, token)
-            apply()
+            commit()
         }
         sendPushToken()
     }
@@ -56,7 +61,7 @@ class AppAuth private constructor(context: Context) {
         _authStateFlow.value = AuthState()
         with(prefs.edit()) {
             clear()
-            apply()
+            commit()
         }
         sendPushToken()
     }
@@ -66,12 +71,12 @@ class AppAuth private constructor(context: Context) {
         CoroutineScope(Dispatchers.Default).launch {
             try {
                 if (token != null) {
-                    ApiClient.userService.save(PushToken(token))
+                    userAPI.save(PushToken(token))
                 }
                 Firebase.messaging.token.addOnSuccessListener { token ->
                     CoroutineScope(Dispatchers.Default).launch {
                         Log.i(tag, "$token")
-                        ApiClient.userService.save(PushToken(token))
+                        userAPI.save(PushToken(token))
                     }
                 }
             } catch (e: Exception) {
@@ -81,6 +86,10 @@ class AppAuth private constructor(context: Context) {
     }
 
     companion object {
+
+        const val idKey = "id"
+        const val tokenKey = "token"
+
         @Volatile
         private var instance: AppAuth? = null
 
@@ -90,11 +99,12 @@ class AppAuth private constructor(context: Context) {
             )
         }
 
-        fun initApp(context: Context): AppAuth = instance ?: synchronized(this) {
-            instance ?: buildAuth(context).also { instance = it }
+        fun initApp(context: Context, userAPI: UserAPI): AppAuth = instance ?: synchronized(this) {
+            instance ?: buildAuth(context, userAPI).also { instance = it }
         }
 
-        private fun buildAuth(context: Context): AppAuth = AppAuth(context)
+        private fun buildAuth(context: Context, userAPI: UserAPI): AppAuth =
+            AppAuth(context, userAPI)
     }
 }
 

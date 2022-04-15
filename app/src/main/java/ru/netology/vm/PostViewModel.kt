@@ -4,37 +4,32 @@ import android.app.Application
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import ru.netology.AppAuth
 import ru.netology.nmedia.Post
 import ru.netology.repository.*
-import ru.netology.AppDb
-import ru.netology.datasource.RetrofitPostSourceImpl
-import ru.netology.datasource.RoomPostSourceImpl
 import ru.netology.extension.getEmptyPost
-import ru.netology.network.ApiClient
 import ru.netology.network.AppError
 import ru.netology.nmedia.NmediaApp
 import ru.netology.nmedia.PhotoModel
 import ru.netology.nmedia.R
 import java.io.File
+import javax.inject.Inject
 import kotlin.Exception
 
-
-class PostViewModel(
+@HiltViewModel
+class PostViewModel @Inject constructor(
     app: Application,
+    private val repository: PostDataRepository,
+    private val appAuth: AppAuth
 ) : AndroidViewModel(app) {
 
     private val defaultMessage =
         getApplication<NmediaApp>().getString(R.string.error_request_message)
 
-    private val repository: PostDataRepository = RetrofitPostRepositoryImpl(
-        RetrofitPostSourceImpl(ApiClient.postsService),
-        RoomPostSourceImpl(AppDb.getInstance(app.applicationContext).postDao())
-    )
-
-    val data: LiveData<FeedModel> = AppAuth.getInstance()
+    val data: LiveData<FeedModel> = appAuth
         .authStateFlow
         .flatMapLatest { (myId, _) ->
             repository.data
@@ -50,7 +45,7 @@ class PostViewModel(
     val loadingState: LiveData<LoadingState>
         get() = _loadingState
 
-    private val edited = MutableLiveData(getEmptyPost())
+    private val edited = MutableLiveData(getEmptyPost(getId()))
     val editPost: LiveData<Post>
         get() = edited
 
@@ -68,15 +63,17 @@ class PostViewModel(
                 execute(defaultMessage, _loadingState) {
                     repository.save(post = it)
                     _postCreated.postValue(Unit)
-                    edited.value = getEmptyPost()
+                    edited.value = getEmptyPost(getId())
                 }
             }
         }
     }
 
     fun cancel() {
-        edited.value = getEmptyPost()
+        edited.value = getEmptyPost(getId())
     }
+
+    private fun getId() = appAuth.authStateFlow.value.id
 
     fun removePhoto() {
         edited.value?.let { post ->

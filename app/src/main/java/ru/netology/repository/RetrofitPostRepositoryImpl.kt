@@ -5,12 +5,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import ru.netology.datasource.PostDataSource
+import ru.netology.di.RetrofitPostSource
+import ru.netology.di.RoomPostSource
 import ru.netology.nmedia.MediaUpload
 import ru.netology.nmedia.Post
+import javax.inject.Inject
 
-class RetrofitPostRepositoryImpl(
-    private val remoteSource: PostDataSource,
-    private val localSource: PostDataSource,
+class RetrofitPostRepositoryImpl @Inject constructor(
+    @RetrofitPostSource private val remoteSource: PostDataSource,
+    @RoomPostSource private val localSource: PostDataSource,
 ) : PostDataRepository {
 
     override val data: Flow<List<Post>>

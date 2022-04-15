@@ -1,18 +1,25 @@
 package ru.netology.network
 
+import android.content.SharedPreferences
 import okhttp3.Interceptor
 import okhttp3.Response
 import ru.netology.AppAuth
 
-class AuthInterceptor : Interceptor {
+class AuthInterceptor(
+    var prefs: SharedPreferences
+) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        AppAuth.getInstance().authStateFlow.value.token?.let { token ->
-            val request = chain.request().newBuilder()
-                .addHeader("Authorization", token)
-                .build()
-            return chain.proceed(request)
+        prefs.getString(AppAuth.tokenKey, null).let { token ->
+            if (token == null) {
+                chain.request().newBuilder().build()
+            } else {
+                chain.request().newBuilder()
+                    .addHeader("Authorization", token)
+                    .build()
+            }.also {
+                return chain.proceed(it)
+            }
         }
-        return chain.proceed(chain.request())
     }
 }

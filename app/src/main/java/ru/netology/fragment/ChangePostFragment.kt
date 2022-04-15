@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.github.dhaval2404.imagepicker.constant.ImageProvider
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.extension.PostDataArg
 import ru.netology.extension.hideKeyboard
 import ru.netology.extension.navigate
@@ -25,6 +26,7 @@ import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentChangePostBinding
 import ru.netology.vm.PostViewModel
 
+@AndroidEntryPoint
 class ChangePostFragment : Fragment() {
 
     private lateinit var post: Post
@@ -53,7 +55,7 @@ class ChangePostFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        post = arguments!!.postData!!
+        post = requireArguments().postData!!
     }
 
     override fun onCreateView(
@@ -116,7 +118,7 @@ class ChangePostFragment : Fragment() {
             )
         }
 
-        viewModel.editPost.observe(viewLifecycleOwner, { post ->
+        viewModel.editPost.observe(viewLifecycleOwner) { post ->
             binding.content.setText(post?.content.orEmpty())
             binding.videoLink.setText(post?.youtubeLink.orEmpty())
             binding.previewCard.isVisible = post?.photoModel != null
@@ -128,12 +130,12 @@ class ChangePostFragment : Fragment() {
                     .centerCrop()
                     .into(binding.photoLayoutPreview)
             }
-        })
+        }
 
-        viewModel.postCreated.observe(viewLifecycleOwner, {
+        viewModel.postCreated.observe(viewLifecycleOwner) {
             viewModel.loadPosts()
             findNavController().navigateUp()
-        })
+        }
     }
 
     private fun getInputtedText() = binding.content.text?.toString().orEmpty()

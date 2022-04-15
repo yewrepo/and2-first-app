@@ -8,8 +8,9 @@ import okio.IOException
 import ru.netology.extension.getOrThrow
 import ru.netology.network.*
 import ru.netology.nmedia.*
+import javax.inject.Inject
 
-class RetrofitPostSourceImpl(
+class RetrofitPostSourceImpl @Inject constructor(
     private val api: PostAPI
 ) : PostDataSource {
 

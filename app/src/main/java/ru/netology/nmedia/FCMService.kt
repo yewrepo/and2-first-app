@@ -4,16 +4,22 @@ import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.AppAuth
 import ru.netology.notification.Notifications
 import java.lang.Exception
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class FCMService : FirebaseMessagingService() {
 
     private var tag = FCMService::class.java.simpleName
 
     private val content = "content"
     private val gson = Gson()
+
+    @Inject
+    lateinit var appAuth: AppAuth
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         Log.i(tag, "remoteMessage: $remoteMessage")
@@ -23,10 +29,10 @@ class FCMService : FirebaseMessagingService() {
                     remoteMessage.data[content],
                     NewPushModel::class.java
                 )?.apply {
-                    val id = AppAuth.getInstance().authStateFlow.value.id
+                    val id = appAuth.authStateFlow.value.id
                     if (recipientId != null) {
                         if ((recipientId == 0L) || (recipientId != 0L && recipientId != id)) {
-                            AppAuth.getInstance().sendPushToken()
+                            appAuth.sendPushToken()
                         } else if (recipientId == id) {
                             Notifications(applicationContext).notifyText(content)
                         }
@@ -42,6 +48,6 @@ class FCMService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         Log.i(tag, "token: $token")
-        AppAuth.getInstance().sendPushToken(token)
+        appAuth.sendPushToken(token)
     }
 }

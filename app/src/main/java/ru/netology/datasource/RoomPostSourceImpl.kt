@@ -13,8 +13,9 @@ import ru.netology.db.toListDto
 import ru.netology.nmedia.Media
 import ru.netology.nmedia.MediaUpload
 import ru.netology.nmedia.Post
+import javax.inject.Inject
 
-class RoomPostSourceImpl(
+class RoomPostSourceImpl @Inject constructor(
     private val dao: PostDao
 ) : PostDataSource {
 

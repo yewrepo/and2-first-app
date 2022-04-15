@@ -4,17 +4,26 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import dagger.hilt.android.AndroidEntryPoint
+import ru.netology.nmedia.Error
+import ru.netology.nmedia.R
+import ru.netology.nmedia.Success
 import ru.netology.nmedia.databinding.FragmentAuthBinding
 import ru.netology.vm.AuthViewModel
 
+@AndroidEntryPoint
 class AuthFragment : Fragment() {
 
     private var hasLogin: Boolean = false
     private var hasPassword: Boolean = false
     private val viewModel: AuthViewModel by activityViewModels()
+
+    private var afterStartup = false
 
     private lateinit var binding: FragmentAuthBinding
 
@@ -29,6 +38,24 @@ class AuthFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        viewModel.loadingState.observe(viewLifecycleOwner) { state ->
+            if (afterStartup) {
+                when (state) {
+                    Error -> {
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.auth_error_message),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    Success -> {
+                        findNavController().navigateUp()
+                    }
+                }
+            }
+            afterStartup = true
+        }
 
         binding.loginText.addTextChangedListener {
             hasLogin = it.isNullOrBlank().not()

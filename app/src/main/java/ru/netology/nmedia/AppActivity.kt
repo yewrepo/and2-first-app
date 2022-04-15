@@ -1,7 +1,6 @@
 package ru.netology.nmedia
 
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -10,11 +9,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailabilityLight
-import ru.netology.AppAuth
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.databinding.ActivityAppBinding
 import ru.netology.vm.AuthViewModel
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class AppActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var googleApiAvailabilityLight: GoogleApiAvailabilityLight
 
     private lateinit var binding: ActivityAppBinding
     private val viewModel: AuthViewModel by viewModels()
@@ -25,11 +29,16 @@ class AppActivity : AppCompatActivity() {
         setContentView(binding.root)
         checkGoogleAvailability()
 
-        viewModel.data.observe(this, { authState ->
+        viewModel.data.observe(this) { authState ->
             if (authState.id > 0) {
                 getNavigation().navigateUp()
             }
-        })
+        }
+        viewModel.loadingState.observe(this) { state ->
+            if (state == Success) {
+                invalidateOptionsMenu()
+            }
+        }
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
@@ -52,7 +61,7 @@ class AppActivity : AppCompatActivity() {
                 true
             }
             R.id.signout -> {
-                AppAuth.getInstance().removeAuth()
+                viewModel.removeAuth()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -62,7 +71,7 @@ class AppActivity : AppCompatActivity() {
     private fun getNavigation() = findNavController(R.id.nav_host_fragment_container)
 
     private fun checkGoogleAvailability() {
-        with(GoogleApiAvailabilityLight.getInstance()) {
+        with(googleApiAvailabilityLight) {
             val code = isGooglePlayServicesAvailable(this@AppActivity)
             if (code == ConnectionResult.SUCCESS) {
                 return@with

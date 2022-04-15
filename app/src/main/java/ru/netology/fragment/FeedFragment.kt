@@ -12,6 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.adapter.ClickCallback
 import ru.netology.adapter.PostAdapter
 import ru.netology.extension.navigate
@@ -21,6 +22,7 @@ import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.vm.AuthViewModel
 import ru.netology.vm.PostViewModel
 
+@AndroidEntryPoint
 class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
     private lateinit var binding: FragmentFeedBinding
@@ -109,13 +111,11 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         binding.recycler.layoutManager = recyclerManager
         binding.recycler.adapter = postAdapter
 
-        authViewModel.data.observe(viewLifecycleOwner, { authState ->
-            if (authState.id > 0) {
-                viewModel.loadPosts()
-            }
-        })
+        authViewModel.data.observe(viewLifecycleOwner) { _ ->
+            viewModel.loadPosts()
+        }
 
-        viewModel.loadingState.observe(viewLifecycleOwner, { loadingState ->
+        viewModel.loadingState.observe(viewLifecycleOwner) { loadingState ->
             binding.recycler.isVisible = !loadingState.isLoading && !loadingState.isError
             binding.swiper.isRefreshing = loadingState.isLoading
             binding.errorGroup.isVisible = loadingState.isError
@@ -123,9 +123,9 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
             loadingState.errorDescription?.apply {
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             }
-        })
+        }
 
-        viewModel.data.observe(viewLifecycleOwner, { feedModel ->
+        viewModel.data.observe(viewLifecycleOwner) { feedModel ->
             val oldItemsCount = postAdapter.currentList.size
             postAdapter.submitList(feedModel.posts) {
                 if (oldItemsCount < feedModel.posts.size) {
@@ -134,13 +134,13 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
             }
             binding.recycler.isVisible = true
             binding.emptyText.isVisible = feedModel.empty
-        })
+        }
 
-        viewModel.editPost.observe(viewLifecycleOwner, { post ->
+        viewModel.editPost.observe(viewLifecycleOwner) { post ->
             if (post.id != 0L) {
                 navigate(R.id.action_feedFragment_to_changePostFragment, post)
             }
-        })
+        }
 
         binding.addNewFab.setOnClickListener {
             if (authViewModel.authenticated) {
