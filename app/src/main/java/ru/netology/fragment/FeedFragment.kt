@@ -149,8 +149,6 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
                 navigate(R.id.action_feedFragment_to_authFragment)
             }
         }
-
-        viewModel.requestUpdates()
     }
 
     override fun onResume() {

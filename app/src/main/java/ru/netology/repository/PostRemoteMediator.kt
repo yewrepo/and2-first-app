@@ -6,6 +6,7 @@ import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
+import retrofit2.Response
 import ru.netology.AppDb
 import ru.netology.db.PostRemoteKeyEntity
 import ru.netology.db.dao.PostRemoteKeyDao
@@ -27,12 +28,17 @@ class PostRemoteMediator @Inject constructor(
     ): MediatorResult {
         try {
             val response = when (loadType) {
-                LoadType.REFRESH -> service.getLatest(state.config.initialLoadSize)
+                LoadType.REFRESH -> {
+                    val id = postRemoteKeyDao.max()
+                    if (id == null) {
+                        service.getLatest(state.config.initialLoadSize)
+                    } else {
+                        service.getAfter(id, state.config.pageSize)
+                    }
+
+                }
                 LoadType.PREPEND -> {
-                    val id = postRemoteKeyDao.max() ?: return MediatorResult.Success(
-                        endOfPaginationReached = false
-                    )
-                    service.getAfter(id, state.config.pageSize)
+                    Response.success(emptyList())
                 }
                 LoadType.APPEND -> {
                     val id = postRemoteKeyDao.min() ?: return MediatorResult.Success(
