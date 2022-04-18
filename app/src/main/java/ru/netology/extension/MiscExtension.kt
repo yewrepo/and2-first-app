@@ -104,11 +104,11 @@ fun Application.initChannels() {
 fun RecyclerView.ViewHolder.getContext() = itemView.context
 
 fun Attachment.getRemoteMediaRoute(): String {
-    return "${Variables.BASE_URL}media/${url}"
+    return "${Variables.BASE_MEDIA_URL}${url}"
 }
 
 fun Post.getRemoteAvatarRoute(): String {
-    return "${Variables.BASE_URL}avatars/${authorAvatar}"
+    return "${Variables.BASE_AVATARS_URL}${authorAvatar}"
 }
 
 fun <T> Response<T>.getOrThrow(): T {
