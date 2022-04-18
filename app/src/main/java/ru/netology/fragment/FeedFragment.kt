@@ -17,6 +17,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import ru.netology.adapter.ClickCallback
 import ru.netology.adapter.PostAdapter
+import ru.netology.adapter.PostLoadStateAdapter
 import ru.netology.extension.isLoading
 import ru.netology.extension.navigate
 import ru.netology.extension.openYoutube
@@ -103,6 +104,7 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
             }
         })
 
+
         binding.newPostsNotify.setOnClickListener {
             postAdapter.refresh()
             binding.newPostsNotify.isVisible = false
@@ -114,7 +116,10 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         binding.swiper.setOnRefreshListener(this)
         recyclerManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
         binding.recycler.layoutManager = recyclerManager
-        binding.recycler.adapter = postAdapter
+        binding.recycler.adapter = postAdapter.withLoadStateHeaderAndFooter(
+            header = PostLoadStateAdapter { postAdapter.retry() },
+            footer = PostLoadStateAdapter { postAdapter.retry() }
+        )
 
         authViewModel.data.observe(viewLifecycleOwner) {
             postAdapter.refresh()

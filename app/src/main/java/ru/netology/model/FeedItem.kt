@@ -10,6 +10,7 @@ data class FeedAd(
     val image: String,
 ) : FeedItem()
 
+/*
 data class FeedLoading(
     override val id: Long
-) : FeedItem()
+) : FeedItem()*/

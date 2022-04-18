@@ -5,7 +5,6 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import ru.netology.model.FeedAd
 import ru.netology.model.FeedItem
-import ru.netology.model.FeedLoading
 import ru.netology.model.Post
 
 private val diffCallback = object : DiffUtil.ItemCallback<FeedItem>() {
@@ -22,13 +21,11 @@ class PostAdapter(
     private val callback: ClickCallback
 ) : PagingDataAdapter<FeedItem, FeedPostViewHolder>(diffCallback) {
 
-    private val typeLoading = 0
     private val typePost = 1
     private val typeAd = 2
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FeedPostViewHolder {
         return when (viewType) {
-            typeLoading -> LoadingViewHolder.create(parent)
             typeAd -> AdViewHolder.create(parent, callback)
             else -> PostViewHolder.create(parent, callback)
         }
@@ -41,7 +38,6 @@ class PostAdapter(
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
             is FeedAd -> typeAd
-            is FeedLoading -> typeLoading
             is Post -> typePost
             null -> typePost
         }
