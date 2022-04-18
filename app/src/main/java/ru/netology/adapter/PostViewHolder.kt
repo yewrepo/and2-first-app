@@ -11,10 +11,9 @@ import ru.netology.extension.getContext
 import ru.netology.extension.getRemoteAvatarRoute
 import ru.netology.extension.getRemoteMediaRoute
 import ru.netology.extension.shortFormat
-import ru.netology.nmedia.Post
+import ru.netology.model.Post
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
-import java.util.*
 
 class PostViewHolder(
     private val binding: CardPostBinding,

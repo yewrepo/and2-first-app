@@ -1,4 +1,4 @@
-package ru.netology.nmedia
+package ru.netology.service
 
 import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -6,6 +6,7 @@ import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.AppAuth
+import ru.netology.model.NewPushModel
 import ru.netology.notification.Notifications
 import java.lang.Exception
 import javax.inject.Inject

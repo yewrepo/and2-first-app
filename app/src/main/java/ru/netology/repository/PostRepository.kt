@@ -1,7 +1,7 @@
 package ru.netology.repository
 
 import androidx.lifecycle.LiveData
-import ru.netology.nmedia.Post
+import ru.netology.model.Post
 
 interface PostRepository {
     fun get(): LiveData<List<Post>>

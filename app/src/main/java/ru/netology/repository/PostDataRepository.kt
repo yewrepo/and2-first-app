@@ -2,7 +2,7 @@ package ru.netology.repository
 
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
-import ru.netology.nmedia.Post
+import ru.netology.model.Post
 
 interface PostDataRepository {
     val data: Flow<PagingData<Post>>

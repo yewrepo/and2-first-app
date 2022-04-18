@@ -3,8 +3,7 @@ package ru.netology.adapter
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
-import ru.netology.nmedia.Post
+import ru.netology.model.Post
 
 private val diffCallback = object : DiffUtil.ItemCallback<Post>() {
     override fun areItemsTheSame(oldItem: Post, newItem: Post): Boolean {

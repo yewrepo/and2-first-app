@@ -11,8 +11,8 @@ import kotlinx.coroutines.flow.flowOn
 import ru.netology.datasource.PostDataSource
 import ru.netology.di.RetrofitPostSource
 import ru.netology.di.RoomPostSource
-import ru.netology.nmedia.MediaUpload
-import ru.netology.nmedia.Post
+import ru.netology.model.MediaUpload
+import ru.netology.model.Post
 import javax.inject.Inject
 
 class PostRepositoryImpl @Inject constructor(

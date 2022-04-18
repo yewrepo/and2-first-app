@@ -19,8 +19,8 @@ import androidx.recyclerview.widget.RecyclerView
 import retrofit2.Response
 import ru.netology.fragment.ChangePostFragment.Companion.postData
 import ru.netology.network.ApiError
-import ru.netology.nmedia.Attachment
-import ru.netology.nmedia.Post
+import ru.netology.model.Attachment
+import ru.netology.model.Post
 import ru.netology.nmedia.R
 import ru.netology.notification.Notifications
 import ru.netology.repository.NetworkPostRepositoryImpl

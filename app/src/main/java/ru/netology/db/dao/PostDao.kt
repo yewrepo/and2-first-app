@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.paging.DataSource
 import androidx.room.*
 import ru.netology.db.PostEntity
-import ru.netology.nmedia.AttachmentType
+import ru.netology.model.AttachmentType
 
 @Dao
 interface PostDao {

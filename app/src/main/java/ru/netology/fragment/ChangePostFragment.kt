@@ -21,7 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.extension.PostDataArg
 import ru.netology.extension.hideKeyboard
 import ru.netology.extension.navigate
-import ru.netology.nmedia.Post
+import ru.netology.model.Post
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentChangePostBinding
 import ru.netology.vm.PostViewModel

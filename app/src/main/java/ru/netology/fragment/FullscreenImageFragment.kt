@@ -11,7 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import ru.netology.extension.PostDataArg
 import ru.netology.extension.getRemoteMediaRoute
-import ru.netology.nmedia.Post
+import ru.netology.model.Post
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentFullscreenImageBinding
 import ru.netology.vm.PostViewModel

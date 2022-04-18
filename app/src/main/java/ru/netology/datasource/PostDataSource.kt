@@ -2,9 +2,9 @@ package ru.netology.datasource
 
 import androidx.paging.PagingSource
 import kotlinx.coroutines.flow.Flow
-import ru.netology.nmedia.Media
-import ru.netology.nmedia.MediaUpload
-import ru.netology.nmedia.Post
+import ru.netology.model.Media
+import ru.netology.model.MediaUpload
+import ru.netology.model.Post
 
 interface PostDataSource {
     fun get(): Flow<List<Post>>

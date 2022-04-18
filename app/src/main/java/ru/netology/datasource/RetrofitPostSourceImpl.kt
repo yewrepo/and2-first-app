@@ -7,8 +7,8 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okio.IOException
 import ru.netology.extension.getOrThrow
+import ru.netology.model.*
 import ru.netology.network.*
-import ru.netology.nmedia.*
 import javax.inject.Inject
 
 class RetrofitPostSourceImpl @Inject constructor(

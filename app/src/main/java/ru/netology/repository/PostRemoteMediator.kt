@@ -13,7 +13,7 @@ import ru.netology.db.dao.PostRemoteKeyDao
 import ru.netology.db.toEntity
 import ru.netology.network.ApiError
 import ru.netology.network.PostAPI
-import ru.netology.nmedia.Post
+import ru.netology.model.Post
 import javax.inject.Inject
 
 @OptIn(ExperimentalPagingApi::class)

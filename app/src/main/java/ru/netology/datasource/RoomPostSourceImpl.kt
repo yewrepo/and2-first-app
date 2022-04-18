@@ -11,9 +11,9 @@ import ru.netology.db.dao.PostDao
 import ru.netology.db.fromDto
 import ru.netology.db.toDto
 import ru.netology.db.toListDto
-import ru.netology.nmedia.Media
-import ru.netology.nmedia.MediaUpload
-import ru.netology.nmedia.Post
+import ru.netology.model.Media
+import ru.netology.model.MediaUpload
+import ru.netology.model.Post
 import javax.inject.Inject
 
 class RoomPostSourceImpl @Inject constructor(
