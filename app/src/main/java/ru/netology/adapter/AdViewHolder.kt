@@ -22,7 +22,7 @@ class AdViewHolder(
 
     override fun bind(feedItem: FeedItem?) {
         (feedItem as FeedAd).apply {
-            val url = "${Variables.BASE_URL}/media/${feedItem.image}"
+            val url = "${Variables.BASE_URL}media/${feedItem.image}"
             Glide.with(getContext())
                 .load(url)
                 .timeout(10_000)
