@@ -11,10 +11,9 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import ru.netology.AppAuth
+import ru.netology.Variables
 import ru.netology.datasource.PostDataSource
 import ru.netology.datasource.RetrofitPostSourceImpl
-import ru.netology.network.ApiClient
 import ru.netology.network.AuthInterceptor
 import ru.netology.network.PostAPI
 import ru.netology.network.UserAPI
@@ -31,12 +30,12 @@ class NetworkModel {
     }
 
     @Provides
-    fun provideRequestInterceptor(prefs: SharedPreferences) : AuthInterceptor {
+    fun provideRequestInterceptor(prefs: SharedPreferences): AuthInterceptor {
         return AuthInterceptor(prefs)
     }
 
     @Provides
-    fun provideBaseUrl() = ApiClient.BASE_URL
+    fun provideBaseUrl() = Variables.BASE_URL
 
     @Singleton
     @Provides

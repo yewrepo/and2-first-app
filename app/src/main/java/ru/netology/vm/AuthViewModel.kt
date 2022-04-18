@@ -9,10 +9,10 @@ import ru.netology.AppAuth
 import ru.netology.AuthState
 import ru.netology.extension.getOrThrow
 import ru.netology.network.UserAPI
-import ru.netology.nmedia.Error
-import ru.netology.nmedia.Loading
-import ru.netology.nmedia.State
-import ru.netology.nmedia.Success
+import ru.netology.model.Error
+import ru.netology.model.Loading
+import ru.netology.model.State
+import ru.netology.model.Success
 import javax.inject.Inject
 
 @HiltViewModel

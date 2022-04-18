@@ -10,9 +10,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
-import ru.netology.nmedia.Error
+import ru.netology.model.Error
 import ru.netology.nmedia.R
-import ru.netology.nmedia.Success
+import ru.netology.model.Success
 import ru.netology.nmedia.databinding.FragmentAuthBinding
 import ru.netology.vm.AuthViewModel
 

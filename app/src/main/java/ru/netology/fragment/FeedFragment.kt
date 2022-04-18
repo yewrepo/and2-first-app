@@ -20,6 +20,7 @@ import ru.netology.adapter.PostAdapter
 import ru.netology.extension.isLoading
 import ru.netology.extension.navigate
 import ru.netology.extension.openYoutube
+import ru.netology.model.Post
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.vm.AuthViewModel
@@ -54,14 +55,14 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
             override fun onOpenClick(position: Int) {
                 postAdapter.peek(position)?.apply {
                     navigate(
-                        R.id.action_feedFragment_to_fullscreenPostFragment, post = this
+                        R.id.action_feedFragment_to_fullscreenPostFragment, post = this as Post
                     )
                 }
             }
 
             override fun onLikeClick(position: Int) {
                 postAdapter.peek(position)?.apply {
-                    viewModel.likeById(id, likedByMe)
+                    viewModel.likeById(id, (this as Post).likedByMe)
                 }
             }
 
@@ -79,7 +80,7 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
             override fun onEditClick(position: Int) {
                 postAdapter.peek(position)?.apply {
-                    viewModel.edit(this)
+                    viewModel.edit(this as Post)
                 }
             }
 
@@ -92,9 +93,13 @@ class FeedFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
             override fun onPhotoOpenClick(position: Int) {
                 postAdapter.peek(position)?.apply {
                     navigate(
-                        R.id.action_feedFragment_to_fullscreenImageFragment, post = this
+                        R.id.action_feedFragment_to_fullscreenImageFragment, post = this as Post
                     )
                 }
+            }
+
+            override fun onAdOpenClick(position: Int) {
+                //not use
             }
         })
 

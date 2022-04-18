@@ -6,6 +6,7 @@ import androidx.paging.PagingSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
+import ru.netology.model.FeedItem
 import ru.netology.db.PostEntity
 import ru.netology.db.dao.PostDao
 import ru.netology.db.fromDto
@@ -25,9 +26,9 @@ class RoomPostSourceImpl @Inject constructor(
         .asFlow()
         .flowOn(Dispatchers.Default)
 
-    override fun pagingSource(): PagingSource<Int, Post> {
+    override fun pagingSource(): PagingSource<Int, FeedItem> {
         return dao.pagingSource().map {
-            it.toDto()
+            it.toDto() as FeedItem
         }.asPagingSourceFactory(Dispatchers.IO).invoke()
     }
 

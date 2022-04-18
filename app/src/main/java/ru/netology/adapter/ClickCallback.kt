@@ -8,4 +8,5 @@ interface ClickCallback {
     fun onEditClick(position: Int)
     fun onYoutubeLinkClick(position: Int)
     fun onPhotoOpenClick(position: Int)
+    fun onAdOpenClick(position: Int)
 }

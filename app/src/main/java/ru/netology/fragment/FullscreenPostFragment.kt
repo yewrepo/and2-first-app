@@ -77,18 +77,15 @@ class FullscreenPostFragment : Fragment() {
             override fun onPhotoOpenClick(position: Int) {
                 navigate(
                     R.id.action_fullscreenPostFragment_to_fullscreenImageFragment,
-                    post = inputData)
+                    post = inputData
+                )
+            }
+
+            override fun onAdOpenClick(position: Int) {
+                //not use
             }
         })
         postHolder.bind(inputData)
-       /* viewModel.data.observe(viewLifecycleOwner) { feedModel ->
-            feedModel.posts.find {
-                it.id == inputData.id
-            }?.let {
-                inputData = it
-                postHolder.bind(inputData)
-            } ?: findNavController().navigateUp()
-        }*/
 
         viewModel.editPost.observe(viewLifecycleOwner) { post ->
             if (post.id != 0L) {

@@ -11,7 +11,7 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailabilityLight
 import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
-import ru.netology.nmedia.Success
+import ru.netology.model.Success
 import ru.netology.nmedia.databinding.ActivityAppBinding
 import ru.netology.vm.AuthViewModel
 import javax.inject.Inject

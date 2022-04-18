@@ -11,9 +11,9 @@ import ru.netology.AppDb
 import ru.netology.db.PostRemoteKeyEntity
 import ru.netology.db.dao.PostRemoteKeyDao
 import ru.netology.db.toEntity
+import ru.netology.model.FeedItem
 import ru.netology.network.ApiError
 import ru.netology.network.PostAPI
-import ru.netology.model.Post
 import javax.inject.Inject
 
 @OptIn(ExperimentalPagingApi::class)
@@ -21,10 +21,10 @@ class PostRemoteMediator @Inject constructor(
     private val service: PostAPI,
     private val db: AppDb,
     private val postRemoteKeyDao: PostRemoteKeyDao,
-) : RemoteMediator<Int, Post>() {
+) : RemoteMediator<Int, FeedItem>() {
     override suspend fun load(
         loadType: LoadType,
-        state: PagingState<Int, Post>
+        state: PagingState<Int, FeedItem>
     ): MediatorResult {
         try {
             val response = when (loadType) {

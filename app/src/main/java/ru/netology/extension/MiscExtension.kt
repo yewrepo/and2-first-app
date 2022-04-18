@@ -17,13 +17,14 @@ import androidx.paging.CombinedLoadStates
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.RecyclerView
 import retrofit2.Response
+import ru.netology.Variables
 import ru.netology.fragment.ChangePostFragment.Companion.postData
 import ru.netology.network.ApiError
 import ru.netology.model.Attachment
+import ru.netology.model.FeedItem
 import ru.netology.model.Post
 import ru.netology.nmedia.R
 import ru.netology.notification.Notifications
-import ru.netology.repository.NetworkPostRepositoryImpl
 import java.util.*
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -67,9 +68,9 @@ fun View?.showKeyboard() = this?.apply {
     }
 }
 
-fun Post?.openYoutube(activity: Activity) {
+fun FeedItem?.openYoutube(activity: Activity) {
     try {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(this?.youtubeLink))
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse((this as Post?)?.youtubeLink))
         activity.startActivity(intent)
     } catch (e: Exception) {
         Toast.makeText(
@@ -103,11 +104,11 @@ fun Application.initChannels() {
 fun RecyclerView.ViewHolder.getContext() = itemView.context
 
 fun Attachment.getRemoteMediaRoute(): String {
-    return "${NetworkPostRepositoryImpl.BASE_URL}/media/${url}"
+    return "${Variables.BASE_URL}/media/${url}"
 }
 
 fun Post.getRemoteAvatarRoute(): String {
-    return "${NetworkPostRepositoryImpl.BASE_URL}/avatars/${authorAvatar}"
+    return "${Variables.BASE_URL}/avatars/${authorAvatar}"
 }
 
 fun <T> Response<T>.getOrThrow(): T {
