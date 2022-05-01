@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import ru.netology.network.UserAPI
-import ru.netology.nmedia.PushToken
+import ru.netology.model.PushToken
 import javax.inject.Inject
 import javax.inject.Singleton
 

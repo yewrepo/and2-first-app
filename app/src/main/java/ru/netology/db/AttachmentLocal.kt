@@ -1,6 +1,6 @@
 package ru.netology.db
 
-import ru.netology.nmedia.AttachmentType
+import ru.netology.model.AttachmentType
 
 data class AttachmentLocal(
     var url: String,

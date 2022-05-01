@@ -8,11 +8,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import ru.netology.model.FeedItem
 import ru.netology.datasource.PostDataSource
 import ru.netology.di.RetrofitPostSource
 import ru.netology.di.RoomPostSource
-import ru.netology.nmedia.MediaUpload
-import ru.netology.nmedia.Post
+import ru.netology.model.MediaUpload
+import ru.netology.model.Post
 import javax.inject.Inject
 
 class PostRepositoryImpl @Inject constructor(
@@ -22,8 +23,8 @@ class PostRepositoryImpl @Inject constructor(
 ) : PostDataRepository {
 
     @OptIn(ExperimentalPagingApi::class)
-    override val data: Flow<PagingData<Post>> = Pager(
-        config = PagingConfig(pageSize = 5),
+    override val data: Flow<PagingData<FeedItem>> = Pager(
+        config = PagingConfig(pageSize = 10),
         initialKey = 0,
         remoteMediator = mediator,
         pagingSourceFactory = localSource::pagingSource

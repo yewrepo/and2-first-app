@@ -1,4 +1,4 @@
-package ru.netology.nmedia
+package ru.netology.model
 
 object Loading : State()
 object Error : State()

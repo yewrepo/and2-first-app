@@ -6,7 +6,7 @@ import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
 import ru.netology.AuthState
-import ru.netology.nmedia.PushToken
+import ru.netology.model.PushToken
 
 interface UserAPI {
 

@@ -6,9 +6,10 @@ import kotlinx.coroutines.flow.flow
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okio.IOException
+import ru.netology.model.FeedItem
 import ru.netology.extension.getOrThrow
+import ru.netology.model.*
 import ru.netology.network.*
-import ru.netology.nmedia.*
 import javax.inject.Inject
 
 class RetrofitPostSourceImpl @Inject constructor(
@@ -17,7 +18,7 @@ class RetrofitPostSourceImpl @Inject constructor(
 
     override fun get(): Flow<List<Post>> = flow { }
 
-    override fun pagingSource(): PagingSource<Int, Post> {
+    override fun pagingSource(): PagingSource<Int, FeedItem> {
         throw IllegalStateException("Not use here")
     }
 

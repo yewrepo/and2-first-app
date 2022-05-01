@@ -6,19 +6,22 @@ import android.util.Log
 import androidx.lifecycle.*
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import androidx.paging.map
+import androidx.paging.insertSeparators
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import ru.netology.AppAuth
-import ru.netology.nmedia.Post
+import ru.netology.model.Post
 import ru.netology.repository.*
 import ru.netology.extension.getEmptyPost
+import ru.netology.model.FeedAd
+import ru.netology.model.FeedItem
 import ru.netology.network.AppError
-import ru.netology.nmedia.PhotoModel
+import ru.netology.model.PhotoModel
 import java.io.File
 import javax.inject.Inject
 import kotlin.Exception
+import kotlin.random.Random
 
 @HiltViewModel
 class PostViewModel @Inject constructor(
@@ -31,12 +34,19 @@ class PostViewModel @Inject constructor(
         .data
         .cachedIn(viewModelScope)
 
-    val data: Flow<PagingData<Post>> = appAuth.authStateFlow
-        .flatMapLatest { (myId, _) ->
+    val data: Flow<PagingData<FeedItem>> = appAuth.authStateFlow
+        .flatMapLatest { (_, _) ->
             cached.map { pagingData ->
-                pagingData.map { post ->
-                    post.copy(ownedByMe = post.authorId == myId)
-                }
+                pagingData.insertSeparators(
+                    generator = { before, after ->
+                        if (before?.id?.rem(5) != 0L) null else
+                            FeedAd(
+                                Random.nextLong(),
+                                "https://netology.ru",
+                                "figma.jpg"
+                            )
+                    }
+                )
             }
         }
 

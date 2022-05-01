@@ -1,4 +1,4 @@
-package ru.netology.nmedia
+package ru.netology
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp

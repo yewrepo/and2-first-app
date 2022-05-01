@@ -1,7 +1,7 @@
 package ru.netology.db
 
-import ru.netology.nmedia.Attachment
-import ru.netology.nmedia.Post
+import ru.netology.model.Attachment
+import ru.netology.model.Post
 
 fun PostEntity.toDto(): Post {
     return Post(

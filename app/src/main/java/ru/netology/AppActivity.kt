@@ -1,4 +1,4 @@
-package ru.netology.nmedia
+package ru.netology
 
 import android.os.Bundle
 import android.view.Menu
@@ -10,6 +10,8 @@ import androidx.navigation.findNavController
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailabilityLight
 import dagger.hilt.android.AndroidEntryPoint
+import ru.netology.nmedia.R
+import ru.netology.model.Success
 import ru.netology.nmedia.databinding.ActivityAppBinding
 import ru.netology.vm.AuthViewModel
 import javax.inject.Inject

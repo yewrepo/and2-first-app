@@ -1,10 +1,10 @@
-package ru.netology.nmedia
+package ru.netology.model
 
 import android.os.Parcel
 import android.os.Parcelable
 
 data class Post(
-    val id: Long,
+    override val id: Long,
     val author: String?,
     val authorId: Long,
     val authorAvatar: String? = null,
@@ -19,7 +19,7 @@ data class Post(
     val ownedByMe: Boolean,
     val photoModel: PhotoModel? = null,
     val attachment: Attachment? = null,
-) : Parcelable {
+) : FeedItem(), Parcelable {
 
     constructor(parcel: Parcel) : this(
         parcel.readLong(),

@@ -5,21 +5,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import ru.netology.extension.getContext
 import ru.netology.extension.getRemoteAvatarRoute
 import ru.netology.extension.getRemoteMediaRoute
 import ru.netology.extension.shortFormat
-import ru.netology.nmedia.Post
+import ru.netology.model.FeedItem
+import ru.netology.model.Post
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
-import java.util.*
 
 class PostViewHolder(
     private val binding: CardPostBinding,
     private val callback: ClickCallback
-) : RecyclerView.ViewHolder(binding.root) {
+) : FeedPostViewHolder(binding.root) {
 
     init {
         binding.root.setOnClickListener {
@@ -57,19 +56,19 @@ class PostViewHolder(
         }
     }
 
-    fun bind(post: Post?) {
-        post?.apply {
-            loadAvatar(post)
-            loadImage(post)
-            setViews(post)
-            setShare(post)
-            setLikes(post)
-            setYoutubeLink(post)
+    override fun bind(feedItem: FeedItem?) {
+        (feedItem as Post).apply {
+            loadAvatar(feedItem)
+            loadImage(feedItem)
+            setViews(feedItem)
+            setShare(feedItem)
+            setLikes(feedItem)
+            setYoutubeLink(feedItem)
             with(binding) {
-                author.text = post.author
-                content.text = post.content
-                published.text = post.published.toString()
-                menu.isVisible = post.ownedByMe
+                author.text = feedItem.author
+                content.text = feedItem.content
+                published.text = feedItem.published.toString()
+                menu.isVisible = feedItem.ownedByMe
             }
         }
     }

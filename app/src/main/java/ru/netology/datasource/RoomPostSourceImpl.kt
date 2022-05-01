@@ -6,14 +6,15 @@ import androidx.paging.PagingSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
+import ru.netology.model.FeedItem
 import ru.netology.db.PostEntity
 import ru.netology.db.dao.PostDao
 import ru.netology.db.fromDto
 import ru.netology.db.toDto
 import ru.netology.db.toListDto
-import ru.netology.nmedia.Media
-import ru.netology.nmedia.MediaUpload
-import ru.netology.nmedia.Post
+import ru.netology.model.Media
+import ru.netology.model.MediaUpload
+import ru.netology.model.Post
 import javax.inject.Inject
 
 class RoomPostSourceImpl @Inject constructor(
@@ -25,9 +26,9 @@ class RoomPostSourceImpl @Inject constructor(
         .asFlow()
         .flowOn(Dispatchers.Default)
 
-    override fun pagingSource(): PagingSource<Int, Post> {
+    override fun pagingSource(): PagingSource<Int, FeedItem> {
         return dao.pagingSource().map {
-            it.toDto()
+            it.toDto() as FeedItem
         }.asPagingSourceFactory(Dispatchers.IO).invoke()
     }
 

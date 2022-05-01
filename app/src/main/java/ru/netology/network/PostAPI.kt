@@ -3,8 +3,8 @@ package ru.netology.network
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.*
-import ru.netology.nmedia.Media
-import ru.netology.nmedia.Post
+import ru.netology.model.Media
+import ru.netology.model.Post
 
 interface PostAPI {
 

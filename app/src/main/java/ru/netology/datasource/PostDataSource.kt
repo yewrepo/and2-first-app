@@ -2,13 +2,14 @@ package ru.netology.datasource
 
 import androidx.paging.PagingSource
 import kotlinx.coroutines.flow.Flow
-import ru.netology.nmedia.Media
-import ru.netology.nmedia.MediaUpload
-import ru.netology.nmedia.Post
+import ru.netology.model.FeedItem
+import ru.netology.model.Media
+import ru.netology.model.MediaUpload
+import ru.netology.model.Post
 
 interface PostDataSource {
     fun get(): Flow<List<Post>>
-    fun pagingSource(): PagingSource<Int, Post>
+    fun pagingSource(): PagingSource<Int, FeedItem>
     suspend fun getNewer(id: Long):  List<Post>
     suspend fun getAll(): List<Post>
     suspend fun likeById(id: Long): Post
